@@ -317,7 +317,7 @@ QListWidget {
     background-color: #1e1e1e;
     color: #ffffff;
     border: 1px solid #4c4c4c;
-    border-radius: 3px;
+    border-radius: 2px;
     outline: none;
 }
 
@@ -325,7 +325,13 @@ QListWidget::item {
     background-color: transparent;
     color: #ffffff;
     padding: 0;
-    border-radius: 2px;
+    border-radius: 3px;
+    border: 1px solid #3b3b3b;
+}
+
+ConfigurationElementWidget {
+    background-color: #2b2b2b;
+    border-radius: 3px;
 }
 
 /* Диалоговые окна */
@@ -420,7 +426,7 @@ ConfigurationElementWidget QLabel#name_lbl[runnable="no"] {
 }
 
 ConfigurationElementWidget QLabel#drag_handle {
-    image: url(:/icons/drager_dark.png);
+    image: url(:/icons/drager.png);
 }
 
 /* Индикатор статуса процесса */

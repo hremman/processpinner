@@ -317,15 +317,21 @@ QListWidget {
     background-color: #ffffff;
     color: #000000;
     border: 1px solid #d0d0d0;
-    border-radius: 3px;
+    border-radius: 2px;
     outline: none;
 }
 
 QListWidget::item {
-    background-color: transparent;
+    background-color: #f0f0f0;
     color: #000000;
     padding: 0;
-    border-radius: 2px;
+    border-radius: 3px;
+    border: 1px solid #e0e0e0;
+}
+
+ConfigurationElementWidget {
+    background-color: transparent;
+    border-radius: 3px;
 }
 
 /* Диалоговые окна */
@@ -410,7 +416,7 @@ QRadioButton::indicator:checked {
 }
 
 ConfigurationElementWidget QLabel#drag_handle {
-    image: url(:/icons/drager_light.png);
+    image: url(:/icons/drager.png);
 }
 
 ConfigurationElementWidget QLabel#name_lbl[runnable="yes"] {
