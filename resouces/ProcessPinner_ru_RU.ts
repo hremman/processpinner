@@ -9,6 +9,12 @@
         <translation>О Process Pinner</translation>
     </message>
     <message>
+        <location filename="../src/forms/aboutdialog.ui" line="130"/>
+        <location filename="../src/aboutdialog.cpp" line="27"/>
+        <source>Special thanks</source>
+        <translation>Особая благодарность</translation>
+    </message>
+    <message>
         <location filename="../src/aboutdialog.cpp" line="12"/>
         <source>Version: %1</source>
         <translation>Версия: %1</translation>
@@ -32,6 +38,21 @@
         <location filename="../src/aboutdialog.cpp" line="19"/>
         <source>View License</source>
         <translation>Текст лицензии</translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.cpp" line="44"/>
+        <source>testing</source>
+        <translation>тестриование</translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.cpp" line="46"/>
+        <source>motivation</source>
+        <translation>мотивация</translation>
+    </message>
+    <message>
+        <location filename="../src/aboutdialog.cpp" line="46"/>
+        <source>Work troubles</source>
+        <translation>Рабочие трудности</translation>
     </message>
 </context>
 <context>
@@ -211,7 +232,7 @@
         <translation>Очистить конфигурацию (Shift+C)</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="83"/>
+        <location filename="../src/mainwindow.cpp" line="84"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change theme&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Don&apos;t push to much!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Переключить тему&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Много не тыкай!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -241,244 +262,244 @@
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="426"/>
+        <location filename="../src/forms/mainwindow.ui" line="429"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="439"/>
+        <location filename="../src/forms/mainwindow.ui" line="442"/>
         <source>Reference</source>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="450"/>
+        <location filename="../src/forms/mainwindow.ui" line="453"/>
         <source>Open</source>
         <translation>Открыть</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="458"/>
+        <location filename="../src/forms/mainwindow.ui" line="461"/>
         <source>Save</source>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="466"/>
+        <location filename="../src/forms/mainwindow.ui" line="469"/>
         <source>Help</source>
         <translation>Помощь</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="471"/>
+        <location filename="../src/forms/mainwindow.ui" line="474"/>
         <source>About</source>
         <translation>О приложении</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="479"/>
         <location filename="../src/forms/mainwindow.ui" line="482"/>
+        <location filename="../src/forms/mainwindow.ui" line="485"/>
         <source>Save as...</source>
         <translation>Сохранить набор как...</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="490"/>
+        <location filename="../src/forms/mainwindow.ui" line="493"/>
         <source>New</source>
         <translation>Новый</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="493"/>
+        <location filename="../src/forms/mainwindow.ui" line="496"/>
         <source>Create new</source>
         <translation>Создать новый набор</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="501"/>
+        <location filename="../src/forms/mainwindow.ui" line="504"/>
         <source>Exit</source>
         <translation>Выйти</translation>
     </message>
     <message>
-        <location filename="../src/forms/mainwindow.ui" line="509"/>
+        <location filename="../src/forms/mainwindow.ui" line="512"/>
         <source>Reload from disk</source>
         <translation>Перечитать файл</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="203"/>
+        <location filename="../src/mainwindow.cpp" line="211"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change theme&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Was it worth it?&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Переключить тему&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Стоило оно того?&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="219"/>
+        <location filename="../src/mainwindow.cpp" line="227"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change theme&lt;/p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;&lt;p&gt;Before epiletic %1...&lt;/p&gt;&lt;/span&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Переключить тему&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;До эпилепсии %1...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="266"/>
+        <location filename="../src/mainwindow.cpp" line="291"/>
         <source>Attention</source>
         <translation>Внимание</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="267"/>
+        <location filename="../src/mainwindow.cpp" line="292"/>
         <source>You need stop &quot;%1&quot; before remove configuration.</source>
         <translation>Сначала нужно остановить &quot;%1&quot; прежде, чем удалять конфигурацию.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="271"/>
+        <location filename="../src/mainwindow.cpp" line="296"/>
         <source>Remove &quot;</source>
         <translation>Удалить &quot;</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="272"/>
+        <location filename="../src/mainwindow.cpp" line="297"/>
         <source>Do you want to remove &quot;%1&quot; configuration?</source>
         <translation>Выхотите убрать конфигурацию &quot;%1&quot;?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="370"/>
+        <location filename="../src/mainwindow.cpp" line="396"/>
         <source>Do you want to remove all configurations?
 This also will stop all processes!</source>
         <translation>Вы хотите очистить список конфигураций?
 Это также остановит все процессы!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="479"/>
+        <location filename="../src/mainwindow.cpp" line="505"/>
         <source>Stop on exit?</source>
         <translation>Остановить при выходе?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="480"/>
+        <location filename="../src/mainwindow.cpp" line="506"/>
         <source>There is run process(es).
 Stop it?</source>
         <translation>Есть запущенные процесс(ы)
 Остановить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="529"/>
+        <location filename="../src/mainwindow.cpp" line="555"/>
         <source>Open configuration error!</source>
         <translation>Ошибка чтения конфигурации!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="530"/>
+        <location filename="../src/mainwindow.cpp" line="556"/>
         <source>Can not open configuration list file.
 Reason: %1</source>
         <translation>Не могу открыть список конфигурации.
 Причина: %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="596"/>
-        <location filename="../src/mainwindow.cpp" line="785"/>
-        <location filename="../src/mainwindow.cpp" line="788"/>
+        <location filename="../src/mainwindow.cpp" line="622"/>
+        <location filename="../src/mainwindow.cpp" line="811"/>
+        <location filename="../src/mainwindow.cpp" line="814"/>
         <source>Open errors!</source>
         <translation>Ошибка при открытии!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="596"/>
-        <location filename="../src/mainwindow.cpp" line="788"/>
+        <location filename="../src/mainwindow.cpp" line="622"/>
+        <location filename="../src/mainwindow.cpp" line="814"/>
         <source>Json is not a list!</source>
         <translation>Json - не список!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="636"/>
+        <location filename="../src/mainwindow.cpp" line="662"/>
         <source>Save configuration as</source>
         <translation>Сокхранить конфигурацию как</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="684"/>
+        <location filename="../src/mainwindow.cpp" line="710"/>
         <source>Stop all?</source>
         <translation>Остановить все?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="685"/>
+        <location filename="../src/mainwindow.cpp" line="711"/>
         <source>There is run process(es). Stop them?</source>
         <translation>Есть запущенные процесс(ы). Остановить их?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="695"/>
+        <location filename="../src/mainwindow.cpp" line="721"/>
         <source>Save?</source>
         <translation>Сохранить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="696"/>
+        <location filename="../src/mainwindow.cpp" line="722"/>
         <source>Current configuration not saved. Save?</source>
         <translation>Текущая конфигурация не сохранена. Сохранить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="714"/>
+        <location filename="../src/mainwindow.cpp" line="740"/>
         <source>Stop and save?</source>
         <translation>Остановить и сохранить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="715"/>
+        <location filename="../src/mainwindow.cpp" line="741"/>
         <source>There is run process(es). Current configuration not saved. How to deal with it?</source>
         <translation>Есть запущенные процесс(ы). Текущая конфигурация не сохранена. Как поступить?</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="809"/>
+        <location filename="../src/mainwindow.cpp" line="835"/>
         <source>Open configuration</source>
         <translation>Открыть конфигурацию</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="876"/>
+        <location filename="../src/mainwindow.cpp" line="902"/>
         <source>Go to associated tab</source>
         <translation>Перейти к вкладке</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="878"/>
+        <location filename="../src/mainwindow.cpp" line="904"/>
         <source>Edit</source>
         <translation>Редактировать</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="879"/>
+        <location filename="../src/mainwindow.cpp" line="905"/>
         <source>Remove</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="881"/>
+        <location filename="../src/mainwindow.cpp" line="907"/>
         <source>Start/Restart</source>
         <translation>Запуск/Перезапуск</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="882"/>
+        <location filename="../src/mainwindow.cpp" line="908"/>
         <source>Stop</source>
         <translation>Остановка</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="570"/>
-        <location filename="../src/mainwindow.cpp" line="762"/>
+        <location filename="../src/mainwindow.cpp" line="596"/>
+        <location filename="../src/mainwindow.cpp" line="788"/>
         <source>Parsing error!</source>
         <translation>Ошибка разбора!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="315"/>
-        <location filename="../src/mainwindow.cpp" line="326"/>
+        <location filename="../src/mainwindow.cpp" line="341"/>
+        <location filename="../src/mainwindow.cpp" line="352"/>
         <source>Stopped %1 of %2.</source>
         <translation>Остановлено %1 из %2.</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="571"/>
-        <location filename="../src/mainwindow.cpp" line="763"/>
+        <location filename="../src/mainwindow.cpp" line="597"/>
+        <location filename="../src/mainwindow.cpp" line="789"/>
         <source>Error happened while parsing %1
 Error: %2</source>
         <translation>Произошла ошибка в процессе разбора %1
 Ошибка: %2</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="582"/>
-        <location filename="../src/mainwindow.cpp" line="777"/>
+        <location filename="../src/mainwindow.cpp" line="608"/>
+        <location filename="../src/mainwindow.cpp" line="803"/>
         <source>Validation error!</source>
         <translation>Ошибка валидации!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="593"/>
-        <location filename="../src/mainwindow.cpp" line="785"/>
+        <location filename="../src/mainwindow.cpp" line="619"/>
+        <location filename="../src/mainwindow.cpp" line="811"/>
         <source>Failed to load %1 of %2 elements</source>
         <translation>Не удалось загрузить %1 из %2 элементов</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="592"/>
+        <location filename="../src/mainwindow.cpp" line="618"/>
         <source>Setup errors!</source>
         <translation>Ошибки конфигурирования!</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="299"/>
+        <location filename="../src/mainwindow.cpp" line="325"/>
         <source>Stopping %1</source>
         <translation>Останавливаю %1</translation>
     </message>
     <message>
-        <location filename="../src/mainwindow.cpp" line="369"/>
+        <location filename="../src/mainwindow.cpp" line="395"/>
         <source>Clear all?</source>
         <translation>Очистить?</translation>
     </message>
@@ -501,7 +522,7 @@ Error: %2</source>
         <translation>Очистить окно вывода (Ctrl+Shift+C)</translation>
     </message>
     <message>
-        <location filename="../src/forms/processtab.ui" line="229"/>
+        <location filename="../src/forms/processtab.ui" line="232"/>
         <source>Not found!</source>
         <translation>Не найдено!</translation>
     </message>
@@ -552,7 +573,7 @@ Error: %2</source>
     </message>
     <message>
         <location filename="../src/processtab.cpp" line="405"/>
-        <location filename="../src/processtab.cpp" line="509"/>
+        <location filename="../src/processtab.cpp" line="513"/>
         <source>Stopped</source>
         <translation>Остановлено</translation>
     </message>
@@ -567,43 +588,43 @@ Error: %2</source>
         <translation>Новое</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="455"/>
+        <location filename="../src/processtab.cpp" line="457"/>
         <source>Failed to start application.</source>
         <translation>Не удалось запустить.</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="456"/>
+        <location filename="../src/processtab.cpp" line="458"/>
         <source>Application crashed.</source>
         <translation>Аварийно завершилось.</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="457"/>
+        <location filename="../src/processtab.cpp" line="459"/>
         <source>Read process output error.</source>
         <translation>Ошибка чтения вывода процесса.</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="458"/>
+        <location filename="../src/processtab.cpp" line="460"/>
         <source>An unknown error occurred.</source>
         <translation>Случилась неизвестная ошибка.</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="461"/>
+        <location filename="../src/processtab.cpp" line="463"/>
         <source>Error type: </source>
         <translation>Тип ошибки: </translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="462"/>
+        <location filename="../src/processtab.cpp" line="464"/>
         <source>Error description: </source>
         <translation>Описание ошибки: </translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="464"/>
-        <location filename="../src/processtab.cpp" line="510"/>
+        <location filename="../src/processtab.cpp" line="466"/>
+        <location filename="../src/processtab.cpp" line="514"/>
         <source>Exit code: %1</source>
         <translation>Код выхода: %1</translation>
     </message>
     <message>
-        <location filename="../src/processtab.cpp" line="475"/>
+        <location filename="../src/processtab.cpp" line="477"/>
         <source>Started</source>
         <translation>Запущено</translation>
     </message>

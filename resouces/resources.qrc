@@ -22,6 +22,12 @@
         <file>icons/close.png</file>
         <file>icons/close_search_dark.png</file>
         <file>icons/close_search_light.png</file>
+        <file>icons/d_click_linux.png</file>
+        <file>icons/d_click_macos.png</file>
+        <file>icons/d_click_windows.png</file>
+        <file>icons/drager.png</file>
+        <file>icons/drager_dark.png</file>
+        <file>icons/drager_light.png</file>
         <file>icons/edit_dark.png</file>
         <file>icons/edit_light.png</file>
         <file>icons/edit_punish.png</file>
@@ -64,10 +70,5 @@
         <file>translations/qt_ru.qm</file>
         <file>translations/qtbase_ru.qm</file>
         <file>translations/qtmultimedia_ru.qm</file>
-        <file>icons/drager_dark.png</file>
-        <file>icons/drager_light.png</file>
-        <file>icons/d_click_linux.png</file>
-        <file>icons/d_click_macos.png</file>
-        <file>icons/d_click_windows.png</file>
     </qresource>
 </RCC>

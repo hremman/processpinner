@@ -156,7 +156,7 @@ ProcessTab::ProcessTab(const ExecutableDTO * const dto, QWidget *parent)
     m_terminate_timer.setSingleShot(true);
     setStatus(ExecutableStatus::NEW);
     enableStartStop(true, false);
-    ui->tab_logs->document()->setMaximumBlockCount(10000);
+    ui->tab_logs->document()->setMaximumBlockCount(2000);
     qInfo() << "    ProcessTab \"" << m_dto->name << "\" inited";
 }
 
@@ -448,7 +448,9 @@ void ProcessTab::onFault(QProcess::ProcessError error){
     qDebug() << "void ProcessTab::onFault(QProcess::ProcessError error)" << "<" << m_dto->name << ">";
 #ifdef Q_OS_WIN
     bool isFault = QProcess::ProcessError::Crashed == error && (m_user_termination && (130 == m_process.exitCode() || -1073741510 == m_process.exitCode()));
-    if (isFault) return;
+    if (isFault){
+        return;
+    }
 #endif
     QString msg;
     switch(error){
@@ -466,17 +468,19 @@ void ProcessTab::onFault(QProcess::ProcessError error){
     } else{
         setStatus(ExecutableStatus::FAULT);
     }
+    emit statusAlert();
     enableStartStop(true, false);
 }
 
 void ProcessTab::onStarted(){
     qDebug() << "void ProcessTab::onStarted()" << "<" << m_dto->name << ">";
-    emit started();
     if (!m_build) logMessage(LogLevel::PP_INFO, tr("Started"));
     ExecutableStatus status = m_build ? ExecutableStatus::BUILD : ExecutableStatus::RUN;
     m_pid = m_process.processId();
     setStatusPid(status, m_pid);
     enableStartStop(true, true);
+    if (!m_build) emit statusRun();
+    else emit statusBuild();
 }
 
 bool ProcessTab::notNormalFinished(QProcess::ExitStatus exitStatus, int exitCode){
@@ -490,7 +494,6 @@ bool ProcessTab::notNormalFinished(QProcess::ExitStatus exitStatus, int exitCode
 
 void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus){
     qDebug() << "void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus)" << "<" << m_dto->name << ">";
-    emit stopped();
     disconnect(m_terminate_connection);
     m_terminate_timer.stop();
 
@@ -498,10 +501,11 @@ void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus){
     ExecutableStatus status = ExecutableStatus::STOPPED;
     bool isFault = notNormalFinished(exitStatus, exitCode);
     if (isFault){
-
+        emit statusAlert();
         level = LogLevel::PP_ERROR;
         status = ExecutableStatus::FAULT;
-    }
+    } else
+        emit statusStopped();
 
     stdout_();
     stderr_();

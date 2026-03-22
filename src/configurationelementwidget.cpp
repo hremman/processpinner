@@ -27,7 +27,18 @@
 #include "tools.h"
 
 long long ConfigurationElementWidget::__M_counter = 0;
-
+std::array<QString, int(ConfigurationElementWidget::IndicatorState::NUM)> ConfigurationElementWidget::__M_indicators_colors = {
+    "color: #00FF00; font-size: 10px",
+    "color: #2288FF; font-size: 10px",
+    "color: #00FF00; font-size: 10px",
+    "color: #FF8400; font-size: 12px; font-weight: 900"
+};
+std::array<QString,  int(ConfigurationElementWidget::IndicatorState::NUM)> ConfigurationElementWidget::__M_indicators = {
+    "",
+    "⬤",
+    "⬤",
+    "!"
+};
 ConfigurationElementWidget::ConfigurationElementWidget(const ExecutableDTO & dto, QListWidgetItem *handlerItem, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::ConfigurationElementWidget)
@@ -39,21 +50,21 @@ ConfigurationElementWidget::ConfigurationElementWidget(const ExecutableDTO & dto
     connect(ui->runnable_chk, &QCheckBox::checkStateChanged, this, &ConfigurationElementWidget::highlightName);
     connect(ui->conf_remove_btn, &QToolButton::clicked, this, &ConfigurationElementWidget::deleteBtn);
     connect(ui->conf_edit_btn, &QToolButton::clicked, this, &ConfigurationElementWidget::editBtn);
-    ui->placeholder_1->setStyleSheet("color: #00FF00; font-size: 10px");
+    ui->indicator->setStyleSheet("color: #00FF00; font-size: 10px");
     ui->drag_handle->setCursor(Qt::SizeVerCursor);
     setupData();
     qInfo() << "    ConfigurationElementWidget \"" << m_dto.name << "\" inited";
 }
 
-void ConfigurationElementWidget::setIndicator(bool on){
-    if (on)
-        ui->placeholder_1->setText("⬤");
-    else
-        ui->placeholder_1->setText("");
+void ConfigurationElementWidget::setIndicator(IndicatorState state){
+    ui->indicator->setStyleSheet(__M_indicators_colors[static_cast<int>(state)]);
+    ui->indicator->setText(__M_indicators[static_cast<int>(state)]);
 }
 
-void ConfigurationElementWidget::ledOn(){ setIndicator(true);}
-void ConfigurationElementWidget::ledOff(){ setIndicator(false);}
+void ConfigurationElementWidget::ledOnRun(){ setIndicator(IndicatorState::RUN);}
+void ConfigurationElementWidget::ledOnBuild(){ setIndicator(IndicatorState::BUILD);}
+void ConfigurationElementWidget::ledOnAlert(){ setIndicator(IndicatorState::ALERT);}
+void ConfigurationElementWidget::ledOff(){ setIndicator(IndicatorState::OFF);}
 
 ConfigurationElementWidget::~ConfigurationElementWidget(){
     qDebug() << "~ConfigurationElementWidget()";

@@ -59,8 +59,10 @@ public:
     bool stopButtonEnabled() const;
 
 signals:
-    void stopped();
-    void started();
+    void statusStopped();
+    void statusBuild();
+    void statusRun();
+    void statusAlert();
 
 
 public slots:

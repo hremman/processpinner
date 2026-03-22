@@ -1,12 +1,24 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
-#include <QTimer>
+#include <QMessageBox>
 
 AboutDialog::AboutDialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::AboutDialog)
 {
     ui->setupUi(this);
+    if(__M_thnx_msg.length() == 0){
+        auto list = QList<QPair<QString, QString>>{
+            {"Alexand Istomin", tr("testing")},
+
+            {tr("Work troubles"), tr("motivation")}//Всегда последнее
+        };
+        QStringList thnx_list;
+        for(QPair<QString, QString> &i: list)
+            thnx_list.append(__M_bullit + i.first + __M_delimeter + i.second);
+        __M_thnx_msg = thnx_list.join("\n");
+
+    }
     ui->text->setText(
         "<html><body><h1>Process Pinner</h1><p>"+
         tr("Version: %1").arg(QApplication::applicationVersion())+
@@ -21,9 +33,22 @@ AboutDialog::AboutDialog(QWidget *parent)
     );
     setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     ui->text->setOpenExternalLinks(true);
+    connect(ui->thnx_btn, &QPushButton::clicked, this, [this](){
+        QMessageBox::information(
+            this,
+            tr("Special thanks"),
+            __M_thnx_msg,
+            QMessageBox::StandardButton::Close,
+            QMessageBox::StandardButton::Close
+        );
+    });
 }
 
 AboutDialog::~AboutDialog()
 {
     delete ui;
 }
+
+const char * const AboutDialog::__M_bullit = "•";
+const char * const AboutDialog::__M_delimeter = " — ";
+QString AboutDialog::__M_thnx_msg = "";

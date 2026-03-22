@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QResizeEvent>
+#include <QPair>
+#include <QList>
 
 namespace Ui {
 class AboutDialog;
@@ -18,6 +20,10 @@ public:
 
 private:
     Ui::AboutDialog *ui;
+
+    static const char * const __M_bullit;
+    static const char * const __M_delimeter;
+    static QString __M_thnx_msg;
 };
 
 #endif // ABOUTDIALOG_H

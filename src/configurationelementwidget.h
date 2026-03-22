@@ -35,6 +35,14 @@ class ConfigurationElementWidget : public QWidget
 
 
 public:
+    enum class IndicatorState{
+        OFF = 0,
+        BUILD,
+        RUN,
+        ALERT,
+        NUM,
+        LAST = NUM - 1
+    };
     explicit ConfigurationElementWidget(const ExecutableDTO & dto, QListWidgetItem *handlerItem, QWidget *parent = nullptr);
     ~ConfigurationElementWidget();
     void paintEvent(QPaintEvent *event);
@@ -62,7 +70,7 @@ public:
 
     void setupData();
 
-    void setIndicator(bool on);
+    void setIndicator(IndicatorState state);
 
 signals:
     void deleteMe(QListWidgetItem *);
@@ -70,7 +78,9 @@ signals:
     void runnableChanged();
 
 public slots:
-    void ledOn();
+    void ledOnRun();
+    void ledOnBuild();
+    void ledOnAlert();
     void ledOff();
 
 private slots:
@@ -82,6 +92,9 @@ private:
     Ui::ConfigurationElementWidget *ui;
     QListWidgetItem *m_handler;
     ExecutableDTO m_dto;
+
+    static std::array<QString, int(IndicatorState::NUM)> __M_indicators_colors;
+    static std::array<QString, int(IndicatorState::NUM)> __M_indicators;
 
 };
 

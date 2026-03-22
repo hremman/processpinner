@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_stop(nullptr)
 {
     ui->setupUi(this);
+    ui->config_list->setSpacing(1);
     qDebug() << "MainWindow::MainWindow()";
     m_theme_light = loadTheme(":/themes/LightTheme.qss");
     m_theme_dark = loadTheme(":/themes/DarkTheme.qss");
@@ -137,6 +138,13 @@ MainWindow::MainWindow(QWidget *parent)
         else
             ui->stub->setMinimumWidth(0);
     });
+    connect(ui->process_tabs, &QTabWidget::currentChanged, this, [this](int index){
+        if (index < 0 || index >= ui->process_tabs->count()) return;
+        auto tab = qobject_cast<ProcessTab*>(ui->process_tabs->widget(index));
+        if (tab != nullptr && tab->isStoped()) {
+            m_executable2config[tab]->ledOff();
+        }
+    });
 
     m_current_file = Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_FILE];
     m_saved = Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_SAVED] == "yes";
@@ -175,7 +183,7 @@ void MainWindow::rotateTheme(){
 }
 
 void MainWindow::hideTabsIfNeeded() {
-    ui->processTabs->setHidden(ui->processTabs->count() == 0);
+    ui->process_tabs->setHidden(ui->process_tabs->count() == 0);
 }
 
 void MainWindow::setThemeTip(const QString &tip) {
@@ -239,20 +247,37 @@ void MainWindow::addConfig(bool){
 void MainWindow::addElement(const ExecutableDTO & dto){
     qDebug() << "void MainWindow::addElement(const ExecutableDTO & dto)";
     auto item = new QListWidgetItem(ui->config_list);
-    ui->config_list->addItem(item);
     ConfigurationElementWidget *element = new ConfigurationElementWidget(dto, item, this);
-    item->setSizeHint(element->sizeHint());
+    QSize size = element->sizeHint();
+    size.setHeight(size.height() + 5); // 45 + 3 = 48
+    item->setSizeHint(size);
+    ui->config_list->addItem(item);
     ui->config_list->setItemWidget(item, element);
+    auto tb = QSignalBlocker(ui->process_tabs);
     ProcessTab * tab = new ProcessTab(&(element->dto()), nullptr);
-    ui->processTabs->addTab(tab, element->name());
+    ui->process_tabs->addTab(tab, element->name());
     connect(element, &ConfigurationElementWidget::deleteMe, this, &MainWindow::removeItem);
     connect(element, &ConfigurationElementWidget::editMe, this, &MainWindow::editConfig);
     m_item2executable[item] = tab;
     m_config2executable[element] = tab;
-    ui->processTabs->setHidden(false);
+    m_executable2config[tab] = element;
+    tb.unblock();
+    ui->process_tabs->setHidden(false);
     connect(element, &ConfigurationElementWidget::runnableChanged, this, &MainWindow::selectionChanged);
-    connect(tab, &ProcessTab::stopped, element, &ConfigurationElementWidget::ledOff);
-    connect(tab, &ProcessTab::started, element, &ConfigurationElementWidget::ledOn);
+    connect(tab, &ProcessTab::statusStopped, element, &ConfigurationElementWidget::ledOff);
+    connect(tab, &ProcessTab::statusBuild, element, &ConfigurationElementWidget::ledOnBuild);
+    connect(tab, &ProcessTab::statusRun, element, &ConfigurationElementWidget::ledOnRun);
+    connect(tab, &ProcessTab::statusAlert, this, [this, element](){
+        auto current_tab = qobject_cast<ProcessTab*>(ui->process_tabs->widget(ui->process_tabs->currentIndex()));
+        auto expected_tab = m_config2executable[element];
+        if(current_tab != expected_tab){
+            element->ledOnAlert();
+        }
+        else {
+            element->ledOff();
+        }
+    });
+
 }
 
 void MainWindow::removeItem(QListWidgetItem* item){
@@ -274,8 +299,9 @@ void MainWindow::removeItem(QListWidgetItem* item){
     {
         disconnect(config, &ConfigurationElementWidget::deleteMe, this, &MainWindow::removeItem);
         m_item2executable.remove(item);
-        int index = ui->processTabs->indexOf(tabWidget);
-        ui->processTabs->removeTab(index);
+        int index = ui->process_tabs->indexOf(tabWidget);
+        ui->process_tabs->removeTab(index);
+        m_executable2config.remove(tabWidget);
         delete tabWidget;
         int row = ui->config_list->row(item);
         m_config2executable.remove(config);
@@ -288,8 +314,8 @@ void MainWindow::removeItem(QListWidgetItem* item){
 void MainWindow::awaitedStopAll(){
     qDebug() << "void MainWindow::awaitedStopAll()";
     QList<ProcessTab*> tabsToStop;
-    for (int tabIndex = 0; tabIndex < ui->processTabs->count(); ++tabIndex){
-        auto tab = qobject_cast<ProcessTab*>(ui->processTabs->widget(tabIndex));
+    for (int tabIndex = 0; tabIndex < ui->process_tabs->count(); ++tabIndex){
+        auto tab = qobject_cast<ProcessTab*>(ui->process_tabs->widget(tabIndex));
         if(tab && !tab->isStoped())
             tabsToStop.append(tab);
     }
@@ -375,8 +401,8 @@ void MainWindow::onClearConfig(bool){
         ui->config_list->clear();
         m_config2executable.clear();
         m_item2executable.clear();
-        ui->processTabs->clear();
-        ui->processTabs->setHidden(true);
+        ui->process_tabs->clear();
+        ui->process_tabs->setHidden(true);
         ui->selector->setCheckState(Qt::CheckState::Unchecked);
         setUnsaved();
     }
@@ -387,7 +413,7 @@ void MainWindow::editConfig(ConfigurationElementWidget* widget){
     EditConfigDialog dialog(&(widget->dto()), this);
     dialog.exec();
     if(dialog.saved()){
-        ui->processTabs->setTabText(ui->processTabs->indexOf(m_config2executable[widget]), widget->dto().name);
+        ui->process_tabs->setTabText(ui->process_tabs->indexOf(m_config2executable[widget]), widget->dto().name);
         m_config2executable[widget]->dtoUpdated();
         widget->setupData();
         setUnsaved();
@@ -740,8 +766,8 @@ void MainWindow::newList(){
         ui->config_list->clear();
         m_config2executable.clear();
         m_item2executable.clear();
-        ui->processTabs->clear();
-        ui->processTabs->setHidden(true);
+        ui->process_tabs->clear();
+        ui->process_tabs->setHidden(true);
         setSelector(Qt::CheckState::Unchecked);
     }
     m_current_file = "";
@@ -793,8 +819,8 @@ void MainWindow::open(const QString& target){
         ui->config_list->clear();
         m_config2executable.clear();
         m_item2executable.clear();
-        ui->processTabs->clear();
-        ui->processTabs->setHidden(true);
+        ui->process_tabs->clear();
+        ui->process_tabs->setHidden(true);
         setSelector(Qt::CheckState::Unchecked);
         for(const ExecutableDTO & dto: dtos)
             addElement(dto);
@@ -846,7 +872,7 @@ void MainWindow::reloadFromDisk(){
 
 void MainWindow::setActiveTab(QListWidgetItem * item){
     if (item){
-        ui->processTabs->setCurrentWidget(m_item2executable[item]);
+        ui->process_tabs->setCurrentWidget(m_item2executable[item]);
     }
 }
 

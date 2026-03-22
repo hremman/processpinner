@@ -28,6 +28,9 @@
     <height>45</height>
    </size>
   </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string notr="true">Form</string>
   </property>
@@ -46,7 +49,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="placeholder_1">
+    <widget class="QLabel" name="indicator">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -106,6 +109,25 @@
        <width>32</width>
        <height>10</height>
       </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="placeholder_1">
+     <property name="minimumSize">
+      <size>
+       <width>10</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>10</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string notr="true"/>
      </property>
     </widget>
    </item>

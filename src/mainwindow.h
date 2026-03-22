@@ -110,6 +110,7 @@ private:
     QString m_stored_theme_tip;
     QMap<QListWidgetItem*, ProcessTab*> m_item2executable;
     QMap<ConfigurationElementWidget*, ProcessTab*> m_config2executable;
+    QMap<ProcessTab*, ConfigurationElementWidget*> m_executable2config;
     bool m_saved;
     QString m_current_file;
     QMenu *m_element_menu;
