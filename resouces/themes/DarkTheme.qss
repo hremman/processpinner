@@ -489,10 +489,10 @@ QTableView::item {
     border: none;
 }
 
-/*QTableView::item:selected {
+QTableView::item:selected {
     background-color: #0078d7;
     color: #ffffff;
-}*/
+}
 
 QHeaderView {
     background-color: #3c3c3c;
@@ -502,8 +502,26 @@ QHeaderView {
 QHeaderView::section {
     background-color: #3c3c3c;
     color: #ffffff;
-    padding: 0;
+    padding: 2px 4px 2px 10px;
     border: 1px solid #4c4c4c;
+    text-align: left;
+}
+
+QHeaderView::up-arrow, 
+QHeaderView::down-arrow {
+    subcontrol-origin: padding;
+    subcontrol-position: center left;
+    height: 10px;
+    width: 10px;
+    left: 10px;
+}
+
+QHeaderView::up-arrow {
+    image: url(:/icons/sort_header_up_dark.png);
+}
+
+QHeaderView::down-arrow {
+    image: url(:/icons/sort_header_down_dark.png);
 }
 
 /* Прогресс бар */

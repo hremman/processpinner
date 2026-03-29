@@ -112,7 +112,7 @@
         </size>
        </property>
        <property name="toolTip">
-        <string>Clear output window (Ctrl+Shift+C)</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>...</string>

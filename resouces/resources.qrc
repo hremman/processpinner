@@ -47,6 +47,10 @@
         <file>icons/radio_button_unchecked_light.png</file>
         <file>icons/remove_dark.png</file>
         <file>icons/remove_light.png</file>
+        <file>icons/sort_header_down_dark.png</file>
+        <file>icons/sort_header_down_light.png</file>
+        <file>icons/sort_header_up_dark.png</file>
+        <file>icons/sort_header_up_light.png</file>
         <file>icons/splitter_h_dark.png</file>
         <file>icons/splitter_h_light.png</file>
         <file>icons/splitter_v_dark.png</file>

@@ -100,19 +100,20 @@ ProcessTab::ProcessTab(const ExecutableDTO * const dto, QWidget *parent)
     search_btn_n_a->setShortcutContext(Qt::WindowShortcut);
     connect(search_btn_n_a, &QAction::triggered, ui->search_btn_n, &QToolButton::click);
     this->addAction(search_btn_n_a);
-    ui->search_btn_n->setToolTip(tr("Find next entry (F3)"));
+    tools::buildToolTip(tr("Find next entry"), ui->search_btn_n, search_btn_n_a);
 
     QAction *search_btn_p_a = new QAction(this);
     search_btn_p_a->setShortcut(QKeySequence("Shift+F3"));
     search_btn_p_a->setShortcutContext(Qt::WindowShortcut);
     connect(search_btn_p_a, &QAction::triggered, ui->search_btn_p, &QToolButton::click);
     this->addAction(search_btn_p_a);
-    ui->search_btn_p->setToolTip(tr("Find prevous entry (Shift+F3)"));
+    tools::buildToolTip(tr("Find prevous entry"), ui->search_btn_p, search_btn_p_a);
 
     QAction *start_btn_a = new QAction(this);
     start_btn_a->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_F5));
     start_btn_a->setShortcutContext(Qt::WindowShortcut);
     connect(start_btn_a, &QAction::triggered, ui->start_btn, &QToolButton::click);
+    start_btn_a->setToolTip(tr("Start/restart application in current tab"));
     this->addAction(start_btn_a);
 
 
@@ -120,6 +121,7 @@ ProcessTab::ProcessTab(const ExecutableDTO * const dto, QWidget *parent)
     stop_btn_a->setShortcut(QKeySequence("Ctrl+F6"));
     stop_btn_a->setShortcutContext(Qt::WindowShortcut);
     connect(stop_btn_a, &QAction::triggered, ui->stop_btn, &QToolButton::click);
+    stop_btn_a->setToolTip(tr("Stop application in current tab"));
     this->addAction(stop_btn_a);
 
 
@@ -128,13 +130,16 @@ ProcessTab::ProcessTab(const ExecutableDTO * const dto, QWidget *parent)
     clear_logs_btn_a->setShortcutContext(Qt::WindowShortcut);
     connect(clear_logs_btn_a, &QAction::triggered, ui->clear_logs_btn, &QToolButton::click);
     this->addAction(clear_logs_btn_a);
+    tools::buildToolTip(tr("Clear output window"),  ui->clear_logs_btn, clear_logs_btn_a);
 
 
     QAction *autoscroll_btn_a = new QAction(this);
     autoscroll_btn_a->setShortcut(QKeySequence("Ctrl+A"));
     autoscroll_btn_a->setShortcutContext(Qt::WindowShortcut);
     connect(autoscroll_btn_a, &QAction::triggered, ui->tab_autoscroll_btn, &QToolButton::click);
+    autoscroll_btn_a->setToolTip(tr("Autoscroll output on/off"));
     this->addAction(autoscroll_btn_a);
+
 
     QAction *search_btn_h_a = new QAction(this);
     search_btn_h_a->setShortcut(QKeySequence("Ctrl+F"));
@@ -144,6 +149,7 @@ ProcessTab::ProcessTab(const ExecutableDTO * const dto, QWidget *parent)
         ui->search_edt->setFocus();
     });
     this->addAction(search_btn_h_a);
+    search_btn_h_a->setToolTip(tr("Find in logs"));
 
     connect(ui->search_edt, &QLineEdit::returnPressed, this, [this](){searchNext(true);});
 
@@ -230,7 +236,7 @@ void ProcessTab::setScrollBtnTip() {
     ui->tab_autoscroll_btn->isChecked();
     ui->tab_autoscroll_btn->setToolTip(
         QString("%1 [%2]")
-            .arg(tr("Autoscroll output (F)"))
+            .arg(tr("Autoscroll output (Ctrl+A)"))
             .arg(ui->tab_autoscroll_btn->isChecked()? tr("disabled") : tr("enabled"))
     );
 }

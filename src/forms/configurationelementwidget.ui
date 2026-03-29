@@ -145,6 +145,9 @@
        <height>24</height>
       </size>
      </property>
+     <property name="toolTip">
+      <string>Edit</string>
+     </property>
      <property name="text">
       <string notr="true"/>
      </property>
@@ -163,6 +166,9 @@
        <width>24</width>
        <height>24</height>
       </size>
+     </property>
+     <property name="toolTip">
+      <string>Remove</string>
      </property>
      <property name="text">
       <string notr="true">...</string>

@@ -80,7 +80,7 @@ macx {
     ICON = resouces/logo-512.icns
 }
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 DEFINES += APP_VERSION=\"\\\"$${VERSION}\\\"\"
 
 DISTFILES += \

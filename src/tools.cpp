@@ -85,5 +85,19 @@ std::pair<QString, QStringList> tools::selectExecutor(const QString & app){
             empty
         );
     }
+}
 
+QString tools::tipShortcut(const QKeySequence &ks){
+    return QString(" (%1)").arg(ks.toString(QKeySequence::NativeText));
+}
+
+void tools::buildToolTip(const QString& tip, QAbstractButton *button,  QAction *action){
+    if (button == nullptr) return;
+    QKeySequence ks = button->shortcut();
+    if (action != nullptr) {
+        action->setToolTip(tip);
+        ks = action->shortcut();
+    }
+    if(!ks.isEmpty()) button->setToolTip(tip + tipShortcut(ks));
+    else button->setToolTip(tip);
 }

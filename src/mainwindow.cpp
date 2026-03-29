@@ -37,6 +37,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <vector>
+#include <QShortcut>
 
 #include "mainwindow.h"
 #include "editconfigdialog.h"
@@ -44,8 +45,11 @@
 #include "ui_mainwindow.h"
 #include "globals.hpp"
 #include "aboutdialog.h"
+#include "tools.h"
+#include "helpwindow.h"
 
 QString MainWindow::__M_title = "Process Pinner[*]";
+std::vector<std::pair<QKeySequence, QString>> MainWindow::__M_shortcuts;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -66,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     , m_edit(nullptr)
     , m_start(nullptr)
     , m_stop(nullptr)
+    , m_help(nullptr)
 {
     ui->setupUi(this);
     ui->config_list->setSpacing(1);
@@ -76,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_themes.append(m_theme_light);
     m_themes.append(m_theme_dark);
     m_themes.append(m_theme_punish);
-    ui->help_mn->setVisible(false);
+    //ui->help_mn->setVisible(false);
 
     ui->config_list->setDropIndicatorShown(true);
 
@@ -107,11 +112,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->stop_all_btn, &QToolButton::clicked, this, &MainWindow::stopAll);
     connect(ui->selector, &QCheckBox::clicked, this, &MainWindow::selectorClicked);
 
+    tools::buildToolTip(tr("Start/restart selected"), ui->start_btn);
+    tools::buildToolTip(tr("Stop selected"), ui->stop_btn);
+    tools::buildToolTip(tr("Stop all"), ui->stop_all_btn);
+    tools::buildToolTip(tr("Add configuration element"), ui->add_btn);
+    tools::buildToolTip(tr("Clear configuration"), ui->remove_btn);
+
     ui->new_mn->setMenuRole(QAction::NoRole);
     ui->open_mn->setMenuRole(QAction::NoRole);
     ui->save_mn->setMenuRole(QAction::NoRole);
     ui->save_as_mn->setMenuRole(QAction::NoRole);
     ui->reload_mn->setMenuRole(QAction::NoRole);
+    ui->help_mn->setMenuRole(QAction::NoRole);
 
 
     connect(ui->new_mn, &QAction::triggered, this, [this](bool){newList();});
@@ -123,6 +135,39 @@ MainWindow::MainWindow(QWidget *parent)
     ui->exit_mn->setMenuRole(QAction::QuitRole);
     ui->exit_mn->setShortcutContext(Qt::WindowShortcut);
     connect(ui->exit_mn,  &QAction::triggered, this, &MainWindow::close);
+    connect(ui->help_mn, &QAction::triggered, this, [this](bool){
+        if(!m_help){
+            QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+            auto wait = QMessageBox(
+                QMessageBox::Icon::NoIcon,
+                tr("Wait for help"),
+                tr("Please wait a few seconds for the help window to open."),
+                QMessageBox::StandardButton::NoButton,
+                this
+            );
+            wait.setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+
+            wait.show();
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+            //Do some slow stuf
+            buildShortcutsList();
+            m_help = new HelpWindow(
+                __M_shortcuts
+            );
+
+            connect(m_help, &QObject::destroyed, this, [this]() {
+                m_help = nullptr;
+            });
+
+            wait.close();
+            QGuiApplication::restoreOverrideCursor();
+
+            m_help->show();
+        } else {
+            m_help->activateWindow();
+            m_help->raise();
+        }
+    });
 
     ui->help_mn->setShortcut(QKeySequence::HelpContents);
 
@@ -154,6 +199,49 @@ MainWindow::MainWindow(QWidget *parent)
     qInfo() << "    MainWindow inited";
     QTimer::singleShot(1, this, &MainWindow::initConfigList);
     qDebug() << "    The Omnissiah approves of this communication channel. The purity of the thoughts is confirmed, the psyker resonance is within the normal range. Warp storms do not interfere with data transmission.";
+}
+
+QString cleanToolTipMarkup(const QString & tt){
+    static QTextDocument doc;
+    doc.setHtml(tt);
+    return doc.toPlainText();
+}
+
+QString cleanToolTip(const QString & tt, const QKeySequence &ks){
+    return cleanToolTipMarkup(tt).remove(tools::tipShortcut(ks));
+}
+
+void MainWindow::buildShortcutsList() {
+    if (!__M_shortcuts.empty()){
+        return;
+    }
+    QSet<QKeySequence> founded;
+    // 1. Собираем все QAction (меню, кнопки с шорткатами)
+    QList<QAction*> actions = this->findChildren<QAction*>();
+    for (QAction* action : actions) {
+        if (!action->shortcut().isEmpty() && !action->toolTip().isEmpty() && !founded.contains(action->shortcut())) {
+            founded.insert(action->shortcut());
+            __M_shortcuts.emplace_back(action->shortcut(), cleanToolTip(action->toolTip(), action->shortcut()));
+
+        }
+    }
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    QList<QAbstractButton*> buttons = this->findChildren<QAbstractButton*>();
+    for (QAbstractButton* button : buttons) {
+        if (!button->shortcut().isEmpty() && !button->toolTip().isEmpty() && !founded.contains(button->shortcut())) {
+            founded.insert(button->shortcut());
+            __M_shortcuts.emplace_back(button->shortcut(), cleanToolTip(button->toolTip(), button->shortcut()));
+
+        }
+    }
+    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+    std::sort(
+        __M_shortcuts.begin(),
+        __M_shortcuts.end(),
+        [](shortcut_pair & i, shortcut_pair & ii){
+            return i.first.toString(QKeySequence::NativeText) < ii.first.toString(QKeySequence::NativeText);
+        }
+    );
 }
 
 MainWindow::~MainWindow()
@@ -537,7 +625,7 @@ void MainWindow::closeEvent(QCloseEvent *event){
     } else {
         qWarning() << "    Could not open rc file for dump: " << rcFile.errorString();
     }
-
+    if(m_help) m_help->close();
     event->accept();
 }
 

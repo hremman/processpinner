@@ -26,6 +26,7 @@
 
 #include "configurationelementwidget.h"
 #include "processtab.h"
+#include "helpwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -95,6 +96,7 @@ private slots:
     void rightTitle();
     void showElementMenu(const QPoint& pos);
     void setActiveTab(QListWidgetItem * item);
+    void buildShortcutsList();
 
 
 private:
@@ -120,8 +122,14 @@ private:
     QAction *m_start;
     QAction *m_stop;
 
+    HelpWindow *m_help;
+
 
     static QString __M_title;
+    static std::vector<std::pair<QKeySequence, QString>> __M_shortcuts;
+    using shortcut_pair = std::pair<QKeySequence, QString>;
+    using shortcut_iterator = std::vector<shortcut_pair>::const_iterator;
+
     enum SaveRun{
         NOTHING = 0,
         HAS_RUN = 1,
