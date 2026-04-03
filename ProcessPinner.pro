@@ -12,6 +12,7 @@ CONFIG += resources_big
 
 SOURCES += \
     src/aboutdialog.cpp \
+    src/changelogwindow.cpp \
     src/loghandler.cpp \
     src/configurationelementwidget.cpp \
     src/editconfigdialog.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
 
 HEADERS += \
     src/aboutdialog.h \
+    src/changelogwindow.h \
     src/loghandler.h \
     src/configurationelementwidget.h \
     src/editconfigdialog.h \
@@ -47,6 +49,7 @@ HEADERS += \
 
 FORMS += \
     src/forms/aboutdialog.ui \
+    src/forms/changelogwindow.ui \
     src/forms/configurationelementwidget.ui \
     src/forms/editconfigdialog.ui \
     src/forms/helpwindow.ui \

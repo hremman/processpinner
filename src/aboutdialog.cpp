@@ -1,6 +1,8 @@
 #include "aboutdialog.h"
 #include "ui_aboutdialog.h"
 #include <QMessageBox>
+#include <QFileInfo>
+#include "changelogwindow.h"
 
 AboutDialog::AboutDialog(QWidget *parent)
     : QDialog(parent)
@@ -42,11 +44,43 @@ AboutDialog::AboutDialog(QWidget *parent)
             QMessageBox::StandardButton::Close
         );
     });
+    if(__M_changelog_path == nullptr || !QFileInfo(__M_changelog_path).exists() )
+        ui->changelog_btn->setHidden(true);
+    else {
+        connect(ui->changelog_btn, &QPushButton::clicked, this, [this](bool){
+            QFileInfo changelog(__M_changelog_path);
+            if (!QFileInfo(__M_changelog_path).exists())
+                changelogError(tr("Changelog file not found!"));
+            QFile changelog_file(changelog.absoluteFilePath());
+            if (!changelog_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                changelogError(tr("Can not open file!\nReason: ") + changelog_file.errorString());
+                return;
+            }
+            QTextStream in(&changelog_file);
+            QString content = in.readAll();
+            changelog_file.close();
+            if (content.length() == 0) {
+                changelogError(tr("Changes log is empty!"));
+                return;
+            }
+            ChangelogWindow clw(content, this);
+            clw.exec();
+        });
+    }
 }
 
 AboutDialog::~AboutDialog()
 {
     delete ui;
+}
+
+void AboutDialog::changelogError(const QString &caused){
+    qDebug() << "AboutDialog::changelogError()";
+    QMessageBox::critical(
+        this,
+        tr("Changelog error!"),
+        caused
+        );
 }
 
 const char * const AboutDialog::__M_bullit = "•";
