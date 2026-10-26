@@ -512,15 +512,15 @@ if config.stage == 'package':
 ## 13. Порядок реализации (этапы)
 
 ### Этап 1: Скелет скрипта
-- [ ] Imports, constants
-- [ ] Config class + parse_config()
-- [ ] Localization (trs словари + tr())
-- [ ] Logger (цветной, локализованный)
-- [ ] Platform detection
+- [x] Imports, constants
+- [x] Config class + parse_config()
+- [x] Localization (trs словари + tr())
+- [x] Logger (цветной, локализованный)
+- [x] Platform detection
 
 ### Этап 2: Проверка зависимостей
-- [ ] Автопоиск qmake
-- [ ] Автопоиск компилятора
+- [x] Автопоиск qmake (`find_qmake()` — `which` + common paths)
+- [x] Автопоиск компилятора (`detect_compiler()`)
 - [ ] Проверка CQtDeployer
 - [ ] Проверка пакетов упаковки (7z / linuxdeploy / macdeployqt)
 
