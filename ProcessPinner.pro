@@ -70,7 +70,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #cqtdeployer -bin myApp -qmake /path/to/qt6/bin/qmake -targetDir ./dist
 #https://github.com/QuasarApp/CQtDeployer
 
-#windeployqt ProcessLauncher.exe
+
 #cqtdeployer -bin myApp.exe -qmake /path/to/windows/qt6/bin/qmake.exe
 win32:RC_ICONS = resouces/logo-512.ico
 
