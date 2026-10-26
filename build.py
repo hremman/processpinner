@@ -1045,6 +1045,20 @@ def _main():
         compiler_str = detect_compiler(platform_str)
     _logger.info(tr("DETECTED_COMPILER", compiler=compiler_str))
 
+    # Validate compiler against platform
+    VALID_COMPILERS = {
+        PLATFORM_WINDOWS: {COMPILER_MSCV, COMPILER_GCC, COMPILER_CLANG},
+        PLATFORM_LINUX: {COMPILER_GCC, COMPILER_CLANG},
+        PLATFORM_DARWIN: {COMPILER_GCC, COMPILER_CLANG},
+    }
+    allowed = VALID_COMPILERS.get(platform_str, set())
+    if allowed and compiler_str not in allowed:
+        _logger.error(
+            f"Invalid compiler '{compiler_str}' for platform '{platform_str}'. "
+            f"Allowed: {', '.join(sorted(allowed))}"
+        )
+        sys.exit(1)
+
     # Resolve toolchain
     toolchain = resolve_toolchain(platform_str, compiler_str)
     _logger.info(tr("DETECTED_TOOLCHAIN", tool=toolchain["make_tool"]))
