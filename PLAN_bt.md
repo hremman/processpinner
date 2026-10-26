@@ -521,8 +521,8 @@ if config.stage == 'package':
 ### Этап 2: Проверка зависимостей
 - [x] Автопоиск qmake (`find_qmake()` — `which` + common paths)
 - [x] Автопоиск компилятора (`detect_compiler()`)
-- [ ] Проверка CQtDeployer
-- [ ] Проверка пакетов упаковки (7z / linuxdeploy / macdeployqt)
+- [x] Проверка CQtDeployer (`check_cqtdeployer()`, `find_cqtdeployer()`)
+- [x] Проверка пакетов упаковки (7z / linuxdeploy / macdeployqt) (`check_packaging_tools()`)
 
 ### Этап 3: Версия и changelog
 - [ ] getGitLog() (анализ префиксов)

@@ -1083,7 +1083,6 @@ def _main():
     else:
         _logger.warn(tr("CQTDEPLOYER_WARN"))
         _logger.warn(tr("CQTDEPLOYER_HINT"))
-        _has_critical_error = True
 
     # 1c. Packaging tools (platform-specific)
     packaging = check_packaging_tools(platform_str)
@@ -1095,8 +1094,11 @@ def _main():
             hint_key = f"{tool_name.upper()}_HINT"
             hint_text = trs_get(hint_key) if hint_key in trs.get(lang, trs.get("en", {})) else ""
             _logger.warn(tr("MISSING_PACKAGING_TOOL", tool=tool_name, hint=hint_text))
-            _logger.warn(tr("PACKAGING_WARN"))
-            _has_critical_error = True
+
+    # Determine if we have any critical errors
+    # CQtDeployer is critical if deploy or package stage is needed
+    if not cqt_found and config.stage not in (None, "build"):
+        _has_critical_error = True
 
     # If critical tools are missing, stop
     if _has_critical_error:
