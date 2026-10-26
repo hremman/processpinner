@@ -108,8 +108,15 @@ trs: dict = {
         "CHECKING_DEPS": "Проверка зависимостей...",
         "DEPS_OK": "Все зависимости найдены",
         "MISSING_TOOL": "Не найден обязательный инструмент: {tool}",
+        "MISSING_PACKAGING_TOOL": "Не найден инструмент упаковки: {tool} ({hint})",
         "TRYING_FALLBACK": "Попытка использовать {fallback} вместо {tool}",
         "FALLBACK_NOT_FOUND": "Не найден fallback: {fallback}",
+        "CQTDEPLOYER_HINT": "Установите cqtdeployer: pip install cqtdeployer или скачайте с https://github.com/QuasarApp/CQtDeployer",
+        "7ZIP_HINT": "Установите 7-Zip с https://www.7-zip.org/",
+        "LINUXDEPLOY_HINT": "Установите linuxdeploy: https://github.com/linuxdeploy/linuxdeploy",
+        "MACDEPLOYQT_HINT": "Установите Qt для macOS; macdeployqt входит в комплект Qt",
+        "PACKAGING_WARN": "Инструмент упаковки не найден — предупреждение, продолжение работы",
+        "CQTDEPLOYER_WARN": "CQtDeployer не найден — не удастся автоматически собрать дистрибутив",
 
         # Version
         "VERSION_CURRENT": "Текущая версия: {version}",
@@ -206,8 +213,15 @@ trs: dict = {
         "CHECKING_DEPS": "Checking dependencies...",
         "DEPS_OK": "All dependencies found",
         "MISSING_TOOL": "Required tool not found: {tool}",
+        "MISSING_PACKAGING_TOOL": "Packaging tool not found: {tool} ({hint})",
         "TRYING_FALLBACK": "Trying {fallback} as fallback for {tool}",
         "FALLBACK_NOT_FOUND": "Fallback not found: {fallback}",
+        "CQTDEPLOYER_HINT": "Install cqtdeployer: pip install cqtdeployer or download from https://github.com/QuasarApp/CQtDeployer",
+        "7ZIP_HINT": "Install 7-Zip from https://www.7-zip.org/",
+        "LINUXDEPLOY_HINT": "Install linuxdeploy: https://github.com/linuxdeploy/linuxdeploy",
+        "MACDEPLOYQT_HINT": "Install Qt for macOS; macdeployqt comes with Qt",
+        "PACKAGING_WARN": "Packaging tool not found — warning, continuing",
+        "CQTDEPLOYER_WARN": "CQtDeployer not found — unable to build a distribution automatically",
 
         # Version
         "VERSION_CURRENT": "Current version: {version}",
@@ -828,6 +842,151 @@ def find_qmake() -> Optional[Path]:
 
 
 # ──────────────────────────────────────────────────────────────
+# Dependency checking (Phase 2)
+# ──────────────────────────────────────────────────────────────
+
+
+def find_cqtdeployer() -> Optional[Path]:
+    """Find CQtDeployer in PATH and common installation locations.
+
+    Returns the Path to the executable or None if not found.
+    """
+    # Search PATH first
+    path = shutil.which("cqtdeployer")
+    if path:
+        return Path(path)
+
+    # Common installation locations (Windows)
+    common_paths = [
+        "C:/Program Files/CQtDeployer/1.6/CQtDeployer.exe",
+        "C:/Program Files/CQtDeployer/1.7/CQtDeployer.exe",
+        "C:/Program Files/CQtDeployer/1.8/CQtDeployer.exe",
+        "C:/Program Files/CQtDeployer/1.9/CQtDeployer.exe",
+        "C:/Program Files/CQtDeployer/1.10/CQtDeployer.exe",
+        "C:/Qt/Tools/CQtDeployer/bin/cqtdeployer.exe",
+    ]
+    for p in common_paths:
+        path = Path(p)
+        if path.exists():
+            return path
+
+    return None
+
+
+def find_7zip() -> Tuple[bool, Optional[Path]]:
+    """Find 7-Zip in PATH and common installation locations.
+
+    Returns:
+        (found, path) — path is None if not found.
+    """
+    # Search PATH
+    for name in ("7z", "7za", "7zip", "7z.exe"):
+        path = shutil.which(name)
+        if path:
+            return (True, Path(path))
+
+    # Common Windows installation locations
+    common_paths = [
+        "C:/Program Files/7-Zip/7z.exe",
+        "C:/Program Files (x86)/7-Zip/7z.exe",
+    ]
+    for p in common_paths:
+        path = Path(p)
+        if path.exists():
+            return (True, Path(p))
+
+    return (False, None)
+
+
+def find_linuxdeploy() -> Tuple[bool, Optional[Path]]:
+    """Find linuxdeploy in PATH or common locations.
+
+    Returns:
+        (found, path) — path is None if not found.
+    """
+    path = shutil.which("linuxdeploy")
+    if path:
+        return (True, Path(path))
+
+    # Common locations
+    common_paths = [
+        "/usr/bin/linuxdeploy",
+        "/usr/local/bin/linuxdeploy",
+        "/opt/linuxdeploy/linuxdeploy",
+        Path.home() / ".linuxdeploy/linuxdeploy",
+    ]
+    for p in common_paths:
+        path = Path(p)
+        if path.exists():
+            return (True, Path(p))
+
+    return (False, None)
+
+
+def find_macdeployqt() -> Tuple[bool, Optional[Path]]:
+    """Find macdeployqt in PATH and common Qt installation locations.
+
+    Returns:
+        (found, path) — path is None if not found.
+    """
+    # Search PATH
+    path = shutil.which("macdeployqt")
+    if path:
+        return (True, Path(path))
+
+    # Common Qt installation locations on macOS
+    home = Path.home()
+    common_paths = [
+        "/opt/qt6/bin/macdeployqt",
+        "/opt/qt5/bin/macdeployqt",
+        "/usr/local/qt6/bin/macdeployqt",
+        "/usr/local/qt5/bin/macdeployqt",
+        home / "Qt/6.x/macos/bin/macdeployqt",
+        home / "Qt/5.x/macos/bin/macdeployqt",
+        home / "Qt/6.7.0/macos/bin/macdeployqt",
+        home / "Qt/6.6.3/macos/bin/macdeployqt",
+    ]
+    for p in common_paths:
+        path = Path(p)
+        if path.exists():
+            return (True, Path(p))
+
+    return (False, None)
+
+
+def check_cqtdeployer() -> Tuple[bool, Optional[Path]]:
+    """Check if CQtDeployer is available.
+
+    Returns:
+        (found, path) — path is None if not found.
+    """
+    path = find_cqtdeployer()
+    return (path is not None, path)
+
+
+def check_packaging_tools(platform: str) -> dict:
+    """Check packaging tools availability for the given platform.
+
+    Returns a dict with tool names as keys and (found, path) tuples as values.
+    """
+    result = {}
+
+    if platform == PLATFORM_WINDOWS:
+        found_7z, path_7z = find_7zip()
+        result["7z"] = (found_7z, path_7z)
+
+    elif platform == PLATFORM_LINUX:
+        found_ld, path_ld = find_linuxdeploy()
+        result["linuxdeploy"] = (found_ld, path_ld)
+
+    elif platform == PLATFORM_DARWIN:
+        found_mdqt, path_mdqt = find_macdeployqt()
+        result["macdeployqt"] = (found_mdqt, path_mdqt)
+
+    return result
+
+
+# ──────────────────────────────────────────────────────────────
 # Version management (placeholder — to be implemented in Phase 3)
 # ──────────────────────────────────────────────────────────────
 
@@ -902,8 +1061,11 @@ def _main():
     if config.no_package:
         _logger.info(tr("STAGE_PACKAGE"))
 
-    # ── Phase 1: Check dependencies ──
+    # ── Phase 1: Check dependencies (Phase 2 of PLAN_bt.md) ──
     _logger.header("=== " + tr("CHECKING_DEPS") + " ===")
+    _has_critical_error = False
+
+    # 1a. qmake (always required)
     qmake = config.qmake_path or find_qmake()
     if qmake:
         _logger.success(tr("DEPS_OK"))
@@ -911,6 +1073,35 @@ def _main():
     else:
         _logger.error(tr("MISSING_TOOL", tool="qmake"))
         _logger.error(tr("ERROR_ABORT"))
+        sys.exit(1)
+
+    # 1b. CQtDeployer (required for deploy + packaging)
+    cqt_found, cqt_path = check_cqtdeployer()
+    if cqt_found:
+        _logger.success(tr("DEPLOY_CQT"))
+        _logger.info(tr("BUILD_OUTPUT", path=str(cqt_path)))
+    else:
+        _logger.warn(tr("CQTDEPLOYER_WARN"))
+        _logger.warn(tr("CQTDEPLOYER_HINT"))
+        _has_critical_error = True
+
+    # 1c. Packaging tools (platform-specific)
+    packaging = check_packaging_tools(platform_str)
+    for tool_name, (found, tool_path) in packaging.items():
+        if found:
+            _logger.success(tr("PACKAGE_SUCCESS", path=tool_name))
+            _logger.info(tr("BUILD_OUTPUT", path=str(tool_path)))
+        else:
+            hint_key = f"{tool_name.upper()}_HINT"
+            hint_text = trs_get(hint_key) if hint_key in trs.get(lang, trs.get("en", {})) else ""
+            _logger.warn(tr("MISSING_PACKAGING_TOOL", tool=tool_name, hint=hint_text))
+            _logger.warn(tr("PACKAGING_WARN"))
+            _has_critical_error = True
+
+    # If critical tools are missing, stop
+    if _has_critical_error:
+        _logger.error(tr("ERROR_ABORT"))
+        _logger.error(tr("USAGE_HINT"))
         sys.exit(1)
 
     # ── Phase 2: Platform & toolchain summary ──
