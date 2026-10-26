@@ -140,6 +140,7 @@ trs: dict = {
         "DEPLOY_CLEAN_TRANSLATIONS": "Чистка переводов...",
         "DEPLOY_COPY_CHANGELOG": "Копирование changelog...",
         "DEPLOY_SUCCESS": "Деплой завершён успешно",
+        "DEPLOY_OUTPUT": "Результат деплоя: {path}",
         "DEPLOY_FAILED": "Ошибка деплоя: {error}",
         "CQTDEPLOYER_MISSING": "CQtDeployer не найден",
 
@@ -167,6 +168,23 @@ trs: dict = {
         "ERROR": "Ошибка",
         "INFO": "Информация",
         "OK": "OK",
+
+        # Help texts for argparse
+        "HELP_DESCRIPTION": "Скрипт сборки ProcessPinner",
+        "HELP_QMAKE_PATH": "Путь к qmake",
+        "HELP_MAKE_TOOL": "Инструмент сборки (make/ninja/msbuild/auto)",
+        "HELP_MAKE_ARGS": "Аргументы для параллельной сборки",
+        "HELP_BUILD_DIR": "Директория сборки",
+        "HELP_DEPLOY_DIR": "Директория деплоя",
+        "HELP_CONFIG": "Путь к файлу конфигурации",
+        "HELP_STAGE": "Остановиться после этапа (build/deploy/package)",
+        "HELP_ONLY_BUILD": "Только сборка",
+        "HELP_NO_PACKAGE": "Без упаковки",
+        "HELP_CHANGELOG_ONLY": "Только показать changelog",
+        "HELP_VERBOSE": "Подробный вывод",
+        "HELP_LANG": "Язык вывода (ru/en/auto)",
+        "HELP_PLATFORM": "Принудительная платформа (windows/linux/darwin)",
+        "HELP_COMPILER": "Принудительный компилятор (msvc/gcc/clang)",
     },
     "en": {
         # Header
@@ -220,6 +238,7 @@ trs: dict = {
         "DEPLOY_CLEAN_TRANSLATIONS": "Cleaning translations...",
         "DEPLOY_COPY_CHANGELOG": "Copying changelog...",
         "DEPLOY_SUCCESS": "Deploy completed successfully",
+        "DEPLOY_OUTPUT": "Deploy output: {path}",
         "DEPLOY_FAILED": "Deploy error: {error}",
         "CQTDEPLOYER_MISSING": "CQtDeployer not found",
 
@@ -247,7 +266,43 @@ trs: dict = {
         "ERROR": "Error",
         "INFO": "Info",
         "OK": "OK",
+
+        # Help texts for argparse
+        "HELP_DESCRIPTION": "ProcessPinner Build Script",
+        "HELP_QMAKE_PATH": "Path to qmake",
+        "HELP_MAKE_TOOL": "Build tool (make/ninja/msbuild/auto)",
+        "HELP_MAKE_ARGS": "Arguments for parallel build",
+        "HELP_BUILD_DIR": "Build directory",
+        "HELP_DEPLOY_DIR": "Deploy directory",
+        "HELP_CONFIG": "Path to config file",
+        "HELP_STAGE": "Stop after stage (build/deploy/package)",
+        "HELP_ONLY_BUILD": "Only build",
+        "HELP_NO_PACKAGE": "No packaging",
+        "HELP_CHANGELOG_ONLY": "Only show changelog",
+        "HELP_VERBOSE": "Verbose output",
+        "HELP_LANG": "Output language (ru/en/auto)",
+        "HELP_PLATFORM": "Force platform (windows/linux/darwin)",
+        "HELP_COMPILER": "Force compiler (msvc/gcc/clang)",
     },
+}
+
+
+HELP_MAP = {
+    "description": "HELP_DESCRIPTION",
+    "qmake_path": "HELP_QMAKE_PATH",
+    "make_tool": "HELP_MAKE_TOOL",
+    "make_args": "HELP_MAKE_ARGS",
+    "build_dir": "HELP_BUILD_DIR",
+    "deploy_dir": "HELP_DEPLOY_DIR",
+    "config": "HELP_CONFIG",
+    "stage": "HELP_STAGE",
+    "only_build": "HELP_ONLY_BUILD",
+    "no_package": "HELP_NO_PACKAGE",
+    "changelog_only": "HELP_CHANGELOG_ONLY",
+    "verbose": "HELP_VERBOSE",
+    "lang": "HELP_LANG",
+    "platform": "HELP_PLATFORM",
+    "compiler": "HELP_COMPILER",
 }
 
 
@@ -504,6 +559,26 @@ def _parse_config_file(config_path: Path) -> dict:
     return result
 
 
+def _resolve_lang(argv: Optional[List[str]]) -> str:
+    """Resolve the output language from argv before any tr() is available."""
+    # First, try to read --lang from argv
+    source = argv if argv is not None else sys.argv[1:]
+    for i, arg in enumerate(source):
+        if arg in ("--lang", "-L") and i + 1 < len(source):
+            val = source[i + 1]
+            if val in ("ru", "en"):
+                return val
+        if arg.startswith("--lang="):
+            val = arg.split("=", 1)[1]
+            if val in ("ru", "en"):
+                return val
+    # Auto-detect from locale
+    locale = os.environ.get("LANG", "")
+    if locale.lower().startswith("ru"):
+        return "ru"
+    return "en"
+
+
 def parse_config(argv: Optional[List[str]] = None) -> Config:
     """Parse configuration from CLI arguments and optional config file.
 
@@ -511,25 +586,39 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
     """
     config = Config()
 
+    # Resolve language early so tr() works for help texts
+    lang = _resolve_lang(argv)
+    tr._lang = lang  # type: ignore[attr-defined]
+
+    # Build help texts via tr()
+    help_keys = [
+        "qmake_path", "make_tool", "make_args", "build_dir",
+        "deploy_dir", "config", "stage", "only_build",
+        "no_package", "changelog_only", "verbose",
+        "lang", "platform", "compiler",
+    ]
+    help_texts = {k: tr(trs_get(HELP_MAP[k])) for k in help_keys}
+    description = tr(trs_get("HELP_DESCRIPTION"))
+
     # Parse config file first (lower priority)
     parser = argparse.ArgumentParser(
-        description=trs_get("BUILD_SCRIPT"),
+        description=description,
         add_help=True,
     )
-    parser.add_argument("--qmake-path", "-q", type=str, default=None, help="Path to qmake")
-    parser.add_argument("--make-tool", "-m", type=str, default="auto", help="Build tool (make/ninja/msbuild/auto)")
-    parser.add_argument("--make-args", type=str, default="", help="Arguments for parallel build")
-    parser.add_argument("--build-dir", "-b", type=str, default=None, help="Build directory")
-    parser.add_argument("--deploy-dir", "-d", type=str, default=None, help="Deploy directory")
-    parser.add_argument("--config", "-c", type=str, default=None, help="Path to config file")
-    parser.add_argument("--stage", "-s", type=str, default=None, help="Stop after stage (build/deploy/package)")
-    parser.add_argument("--only-build", "-o", action="store_true", default=False, help="Only build")
-    parser.add_argument("--no-package", "-n", action="store_true", default=False, help="No packaging")
-    parser.add_argument("--changelog-only", "-l", action="store_true", default=False, help="Only show changelog")
-    parser.add_argument("--verbose", "-v", action="store_true", default=False, help="Verbose output")
-    parser.add_argument("--lang", type=str, default="auto", help="Output language (ru/en/auto)")
-    parser.add_argument("--platform", type=str, default="auto", help="Force platform (windows/linux/darwin)")
-    parser.add_argument("--compiler", type=str, default="auto", help="Force compiler (msvc/gcc/clang)")
+    parser.add_argument("--qmake-path", "-q", type=str, default=None, help=help_texts["qmake_path"])
+    parser.add_argument("--make-tool", "-m", type=str, default="auto", help=help_texts["make_tool"])
+    parser.add_argument("--make-args", type=str, default="", help=help_texts["make_args"])
+    parser.add_argument("--build-dir", "-b", type=str, default=None, help=help_texts["build_dir"])
+    parser.add_argument("--deploy-dir", "-d", type=str, default=None, help=help_texts["deploy_dir"])
+    parser.add_argument("--config", "-c", type=str, default=None, help=help_texts["config"])
+    parser.add_argument("--stage", "-s", type=str, default=None, help=help_texts["stage"])
+    parser.add_argument("--only-build", "-o", action="store_true", default=False, help=help_texts["only_build"])
+    parser.add_argument("--no-package", "-n", action="store_true", default=False, help=help_texts["no_package"])
+    parser.add_argument("--changelog-only", "-l", action="store_true", default=False, help=help_texts["changelog_only"])
+    parser.add_argument("--verbose", "-v", action="store_true", default=False, help=help_texts["verbose"])
+    parser.add_argument("--lang", type=str, default="auto", help=help_texts["lang"])
+    parser.add_argument("--platform", type=str, default="auto", help=help_texts["platform"])
+    parser.add_argument("--compiler", type=str, default="auto", help=help_texts["compiler"])
 
     args = parser.parse_args(argv)
 
