@@ -21,7 +21,6 @@ doRelease.py — автоматизированный скрипт сборки,
 
 import os
 import platform
-import shutil
 import sys
 import argparse
 import subprocess
