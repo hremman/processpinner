@@ -1,0 +1,66 @@
+# ProcessTab Bug Fixes
+
+## 🔴 Critical
+
+### 1. Duplicate `m_user_termination` in `notNormalFinished()`
+**File:** `src/processtab.cpp` (~line 270)  
+**Issue:** Duplicate condition makes logic always true/false.  
+**Current:**
+```cpp
+!(m_user_termination && (m_user_termination && 130 == exitCode))
+```
+**Fix:** Remove duplicate condition
+```cpp
+!(m_user_termination && 130 == exitCode)
+```
+
+---
+
+## 🟡 Medium
+
+### 2. Typo in method name
+**File:** `src/processtab.cpp` (~line 168)  
+**Issue:** Inconsistent naming across codebase.  
+**Current:** `toggleAuthoscroll`  
+**Fix:** Rename to `toggleAutoscroll` throughout:
+- Constructor call: `toggleAuthoscroll(true)` → `toggleAutoscroll(true)`
+- Method declaration: `void toggleAuthoscroll(bool)` → `void toggleAutoscroll(bool)`
+
+---
+
+### 3. Missing Windows-specific comment
+**File:** `src/processtab.cpp` (`onFault()`, ~line 260)  
+**Issue:** No explanation for early return behavior on Windows.  
+**Fix:** Add comment before the `if (isFault){ return; }` block:
+```cpp
+#ifdef Q_OS_WIN
+    // On Windows, onFault may be called before onFinished for user-triggered terminations.
+    // We return early to avoid redundant status updates in onFinished.
+    if (isFault){
+        return;
+    }
+#endif
+```
+
+---
+
+## ℹ️ Notes (Not Bugs - Confirmed Design)
+
+### Autoscroll Logic
+- **Behavior:** Inverted (`!isChecked()` triggers scroll) is intentional design choice.
+- **Recommendation:** Consider renaming method to `ensureAutoScrollMax()` for better clarity.
+
+### QStatusBar in QWidget
+- **Reason:** Qt limitation — `QWidget` cannot have a canonical status bar via `setStatusBar()`.
+- **Current approach:** Manual placement via layout is the accepted workaround.
+- **Future improvement:** Extract `m_status_bar` from class and use custom layout if needed.
+
+---
+
+## Summary
+
+| Priority | Count | Description |
+|----------|-------|-------------|
+| 🔴 Critical | 1 | Duplicate condition in `notNormalFinished()` |
+| 🟡 Medium | 2 | Method name typo, missing Windows comment |
+| ℹ️ Design Notes | 2 | Autoscroll logic, QStatusBar placement |
