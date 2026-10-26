@@ -10,6 +10,9 @@ build.py — единый скрипт сборки, деплоя и упако�
   Linux         — GCC         → AppImage
   macOS         — Clang       → .app bundle + .dmg
 
+Платформа определяется автоматически на основе рантайма (platform.system).
+Принудительная установка платформы через CLI или конфиг отключена.
+
 Требования: только стандартная библиотека Python.
 """
 
@@ -315,7 +318,6 @@ HELP_MAP = {
     "changelog_only": "HELP_CHANGELOG_ONLY",
     "verbose": "HELP_VERBOSE",
     "lang": "HELP_LANG",
-    "platform": "HELP_PLATFORM",
     "compiler": "HELP_COMPILER",
 }
 
@@ -536,11 +538,11 @@ class Config:
         self.make_threads: int = 0  # 0 = auto (cpu_count - 1)
         self.make_args: str = ""
 
-        # Compiler
+        # Compiler (can be forced via CLI or config file)
         self.compiler: str = "auto"  # 'msvc', 'gcc', 'clang', 'auto'
 
-        # Platform override
-        self.platform: str = "auto"  # 'windows', 'linux', 'darwin', 'auto'
+        # Platform is now always auto-detected at runtime — no override
+        self.platform: str = "auto"  # always "auto" — platform is determined at runtime
 
         # Behavior
         self.stage: Optional[str] = None  # 'build', 'deploy', 'package'
@@ -554,7 +556,11 @@ class Config:
 
 
 def _parse_config_file(config_path: Path) -> dict:
-    """Parse a key=value config file, ignoring comments and blank lines."""
+    """Parse a key=value config file, ignoring comments and blank lines.
+
+    PLATFORM key is no longer supported — platform is always auto-detected.
+    COMPILER key is still supported.
+    """
     result = {}
     try:
         with open(config_path, "r", encoding="utf-8") as f:
@@ -567,6 +573,9 @@ def _parse_config_file(config_path: Path) -> dict:
                 key, _, value = line.partition("=")
                 key = key.strip().upper()
                 value = value.strip()
+                # Skip PLATFORM — it is always auto-detected
+                if key == "PLATFORM":
+                    continue
                 result[key] = value
     except OSError:
         pass
@@ -597,6 +606,9 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
     """Parse configuration from CLI arguments and optional config file.
 
     Priority: CLI > config file > defaults.
+
+    Platform is always auto-detected at runtime — --platform is not supported.
+    Compiler can still be overridden via --compiler or the config file.
     """
     config = Config()
 
@@ -609,7 +621,7 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
         "qmake_path", "make_tool", "make_args", "build_dir",
         "deploy_dir", "config", "stage", "only_build",
         "no_package", "changelog_only", "verbose",
-        "lang", "platform", "compiler",
+        "lang", "compiler",
     ]
     help_texts = {k: tr(trs_get(HELP_MAP[k])) for k in help_keys}
     description = tr(trs_get("HELP_DESCRIPTION"))
@@ -631,7 +643,7 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
     parser.add_argument("--changelog-only", "-l", action="store_true", default=False, help=help_texts["changelog_only"])
     parser.add_argument("--verbose", "-v", action="store_true", default=False, help=help_texts["verbose"])
     parser.add_argument("--lang", type=str, default="auto", help=help_texts["lang"])
-    parser.add_argument("--platform", type=str, default="auto", help=help_texts["platform"])
+    # --platform removed: platform is always auto-detected at runtime
     parser.add_argument("--compiler", type=str, default="auto", help=help_texts["compiler"])
 
     args = parser.parse_args(argv)
@@ -662,8 +674,7 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
             config.no_package = file_vars["NO_PACKAGE"].lower() in ("true", "1", "yes")
         if "CHANGELOG" in file_vars:
             config.changelog_only = file_vars["CHANGELOG"].lower() in ("true", "1", "yes")
-        if "PLATFORM" in file_vars and args.platform == "auto":
-            config.platform = file_vars["PLATFORM"]
+        # PLATFORM key is ignored — platform is always auto-detected
         if "COMPILER" in file_vars and args.compiler == "auto":
             config.compiler = file_vars["COMPILER"]
 
@@ -686,8 +697,7 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
         config.changelog_only = True
     if args.lang != "auto":
         config.lang = args.lang
-    if args.platform != "auto":
-        config.platform = args.platform
+    # --platform argument is no longer accepted
     if args.compiler != "auto":
         config.compiler = args.compiler
 
@@ -704,14 +714,13 @@ def parse_config(argv: Optional[List[str]] = None) -> Config:
 
 
 def detect_platform(fallback: str = PLATFORM_LINUX) -> str:
-    """Detect the current platform.
+    """Detect the current platform at runtime.
 
     Returns one of: 'windows', 'linux', 'darwin'.
-    """
-    forced = getattr(detect_platform, "_forced", None)
-    if forced:
-        return forced
 
+    Platform is always auto-detected from the runtime environment.
+    There is no override mechanism (removed --platform argument and config key).
+    """
     sys_name = platform.system().lower()
     if sys_name == PLATFORM_WINDOWS:
         return PLATFORM_WINDOWS
@@ -1033,13 +1042,11 @@ def _main():
     _logger.bold(trs_get("BUILD_SCRIPT"))
     _logger.info(tr("VERSION_INFO", version=get_version()))
 
-    # Determine platform
-    platform_str = config.platform
-    if platform_str == "auto":
-        platform_str = detect_platform()
+    # Determine platform — always auto-detected at runtime
+    platform_str = detect_platform()
     _logger.info(tr("DETECTED_PLATFORM", platform=platform_str))
 
-    # Determine compiler
+    # Determine compiler — can be forced via CLI or config
     compiler_str = config.compiler
     if compiler_str == "auto":
         compiler_str = detect_compiler(platform_str)
