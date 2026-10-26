@@ -384,10 +384,6 @@ def parse_config():
     CLI-аргументы переопределяют config-файл.
     """
     global config
-    global CONFIGURE_CMD
-    global BUILD_CMD
-    global DEPLOY_CMD
-    global PACKAGE_CMD
 
     parser = argparse.ArgumentParser(description=tr('Process Pinner builder script'))
     parser.add_argument('-q', '--qmake-path', help=tr('Path to qmake'))
