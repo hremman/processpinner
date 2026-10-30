@@ -54,12 +54,12 @@ FORMS += \
     src/forms/processtab.ui
 
 TRANSLATIONS += \
-    resouces/ProcessPinner_ru_RU.ts
+    resources/ProcessPinner_ru_RU.ts
 CONFIG += lrelease
 CONFIG += embed_translations
 
 RESOURCES += \
-    resouces/resources.qrc
+    resources/resources.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -72,12 +72,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 
 #cqtdeployer -bin myApp.exe -qmake /path/to/windows/qt6/bin/qmake.exe
-win32:RC_ICONS = resouces/logo-512.ico
+win32:RC_ICONS = resources/logo-512.ico
 
 macx {
     #macdeployqt ProcessLauncher.app для сборки бандла
     QMAKE_MACOSX_DEPLOYMENT_TARGET = 14.0
-    ICON = resouces/logo-512.icns
+    ICON = resources/logo-512.icns
 }
 
 VERSION = "0.1.2"

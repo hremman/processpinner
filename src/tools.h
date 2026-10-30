@@ -3,6 +3,7 @@
 
 #include <QAbstractButton>
 #include <QString>
+#include <QAction>
 
 
 namespace tools

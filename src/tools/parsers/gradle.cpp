@@ -64,7 +64,8 @@ bool parseGradle(ExecutableDTO * dto, const QString & projectDirectory, QString*
 
         QString name = projectLine.mid(delPos+1).trimmed();
         if (name.startsWith('"') && name.endsWith('"') ){
-            name = name.removeFirst().removeLast();
+            //name = name.removeFirst().removeLast();
+            name = name.sliced(1, name.length() - 2);
             if (name.contains("$") && name.indexOf('$') != (name.size() - 1)) {
                 if (name.count("$") > 1){
                     (*error) = QObject::tr("Support only one substitution in kotlin patterns (") + projectLine + ")";

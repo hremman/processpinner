@@ -47,7 +47,10 @@ ConfigurationElementWidget::ConfigurationElementWidget(const ExecutableDTO & dto
 {
     ui->setupUi(this);
     ui->name_lbl->setProperty("runnable", "yes");
-    connect(ui->runnable_chk, &QCheckBox::checkStateChanged, this, &ConfigurationElementWidget::highlightName);
+    //connect(ui->runnable_chk, &QCheckBox::checkStateChanged, this, &ConfigurationElementWidget::highlightName);
+    connect(ui->runnable_chk, &QCheckBox::stateChanged, this, [this](int state) {
+        this->highlightName(static_cast<Qt::CheckState>(state));
+    });
     connect(ui->conf_remove_btn, &QToolButton::clicked, this, &ConfigurationElementWidget::deleteBtn);
     connect(ui->conf_edit_btn, &QToolButton::clicked, this, &ConfigurationElementWidget::editBtn);
     ui->indicator->setStyleSheet("color: #00FF00; font-size: 10px");

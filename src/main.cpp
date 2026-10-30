@@ -62,26 +62,32 @@ int main(int argc, char *argv[])
 
     Global::Vars::RC.insert(std::move(rc_readed));
     LogHandler::init();
-    QTranslator main_trans;
-    if (main_trans.load(":/translations/qt_ru.qm")) {
-        a.installTranslator(&main_trans);
-    }
-    QTranslator base_trans;
-    if (base_trans.load(":/translations/qtbase_ru.qm")) {
-        a.installTranslator(&base_trans);
-    }
-    QTranslator media_trans;
-    if (media_trans.load(":/translations/qtmultimedia_ru.qm")) {
-        a.installTranslator(&media_trans);
-    }
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
+    bool languageLoaded = false;
+
     for (const QString &locale : uiLanguages) {
-        const QString baseName = "ProcessPinner_" + QLocale(locale).name();
-        if (translator.load(":/i18n/" + baseName)) {
+        // Проверяем как полное имя (ru_RU), так и короткое (ru)
+        QString localeName = QLocale(locale).name();
+        if (translator.load(":/i18n/ProcessPinner_" + localeName)) {
             a.installTranslator(&translator);
+            languageLoaded = true;
             break;
         }
+
+        // Вторая попытка для короткого имени (например, просто "ru")
+        if (translator.load(":/i18n/ProcessPinner_" + localeName.left(2))) {
+            a.installTranslator(&translator);
+            languageLoaded = true;
+            break;
+        }
+    }
+
+    // Если ни один перевод не подошел (например, система на en_US),
+    // принудительно выгружаемtranslator, чтобы сработал встроенный в код английский
+    if (!languageLoaded) {
+        a.removeTranslator(&translator);
+        qDebug() << "Language fallback to native English successfully applied.";
     }
     if (!QDir::home().exists(Global::Consts::RC_DIR))
         QDir::home().mkdir(Global::Consts::RC_DIR);

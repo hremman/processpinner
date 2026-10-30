@@ -69,6 +69,8 @@
         <file>themes/DarkTheme.qss</file>
         <file>themes/LightTheme.qss</file>
         <file>themes/PunishmentTheme.qss</file>
+    </qresource>
+    <qresource prefix="/translations">
         <file>translations/qt_ru.qm</file>
         <file>translations/qtbase_ru.qm</file>
         <file>translations/qtmultimedia_ru.qm</file>

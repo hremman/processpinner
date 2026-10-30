@@ -25,6 +25,7 @@
 #include <QTime>
 #include <QTimer>
 #include <QProcess>
+#include <QAction>
 
 #include "executabledto.h"
 

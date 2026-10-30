@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Process Pinner
+Icon=ProcessPinner
+Exec=ProcessPinner
+Comment=Orchestry them all
+Categories=X-Tool;X-Launcher;
+Terminal=false
+StartupNotify=true
