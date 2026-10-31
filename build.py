@@ -16,7 +16,7 @@ from datetime import date
 from enum import Enum
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Never, Any
+from typing import Any, NoReturn
 
 from trs import *
 import urllib.request
@@ -148,7 +148,7 @@ def read_proj() -> str:
     logger.debug('read_proj')
     return read(PROJECT_PATH)
 
-def critical(msg: str) -> Never:
+def critical(msg: str) -> NoReturn:
     """Вывести критическую ошибку в журнал, вернуться в исходный каталог и завершиться."""
     logger.debug('critical')
     os.chdir(START_DIR)
@@ -324,7 +324,7 @@ class Stages:
 class Configuration:
     msvc = False
     msvc_tools = None
-    qmake = 'qmake'
+    qmake = 'qmake6'
     make = 'make'
     git = 'git'
     qt_path = Path('c:/Qt') if PLATFORM == WIN else Path(os.environ['HOME']) / 'Qt'
@@ -507,13 +507,14 @@ def detect_unix_toolchain():
         no_make()
 def download_deploy_linux():
     tools = [
-        ('https://github.com/linuxdeploy/linuxdeploy/releases/latest/download/linuxdeploy-x86_64.AppImage', 'linuxdeploy-x86_64.AppImage'),
-        ('https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/latest/download/linuxdeploy-plugin-qt-x86_64.AppImage', 'linuxdeploy-plugin-qt-x86_64.AppImage'),
-        ('https://github.com/AppImage/appimagetool/releases/latest/download/appimagetool-x86_64.AppImage', 'appimagetool-x86_64.AppImage'),
+        ('https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage', 'linuxdeploy-x86_64.AppImage'),
+        ('https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage', 'linuxdeploy-plugin-qt-x86_64.AppImage'),
+        ('https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage', 'appimagetool-x86_64.AppImage'),
     ]
     config.deploy_dir.mkdir(exist_ok=True)
     for tool in tools:
         urllib.request.urlretrieve(tool[0], config.deploy_dir / tool[1])
+        os.chmod(config.deploy_dir / tool[1], 0o755)
     config.deployer = config.deploy_dir / 'linuxdeploy-x86_64.AppImage'
     config.packager = config.deploy_dir / 'appimagetool-x86_64.AppImage'
     add_in_path(config.deploy_dir)
@@ -732,6 +733,14 @@ def build():
     logger.debug('build')
     config.build_dir.mkdir(parents=True, exist_ok=True)
     os.chdir(config.build_dir)
+    for item in config.build_dir.iterdir():
+        try:
+            if not item.is_dir():
+                item.unlink()  # Удаляет файл
+            else:
+                shutil.rmtree(item)
+        except Exception as e:
+            logger.error(tr('RM_FAULT', path=config.build_dir, msg=str(e)))
     try:
         run_sub([config.qmake] + QMAKE_ARGS, Path(), error_msg= tr('QMAKE_ERROR'))
     except Exception as e:
@@ -750,14 +759,24 @@ def deploy():
     logger.debug('deploy')
     config.deploy_dir.mkdir(exist_ok=True)
     if PLATFORM == LINUX:
+        target = config.deploy_dir / PROJECT_NAME
+        for item in config.deploy_dir.iterdir():
+            try:
+                if not item.is_dir():
+                    item.unlink()  # Удаляет файл
+                else:
+                    shutil.rmtree(item)
+            except Exception as e:
+                logger.error(tr('RM_FAULT', path=item, msg=str(e)))
         try:
+            shutil.copy(RESOURCES_DIR / 'logo-512.png', RESOURCES_DIR / f'{PROJECT_NAME}.png')
             run_sub([
                 config.deployer,
-                '--appdir', config.deploy_dir / PROJECT_NAME,
+                '--appdir', target,
                 '--executable', config.build_dir / EXEC_FILE,
                 '--plugin=qt',
                 '--desktop-file', RESOURCES_DIR / f'{PROJECT_NAME}.desktop',
-                '--icon-file', RESOURCES_DIR / 'logo-512.png'
+                '--icon-file', RESOURCES_DIR / f'{PROJECT_NAME}.png'
             ], config.deploy_dir)
         except Exception as e:
             critical(str(e))
@@ -778,7 +797,7 @@ def deploy():
         cl_file = CH_LOG_RES_PATH if CH_LOG_RES_PATH.exists() else CH_LOG_PATH
         shutil.copy(cl_file, target / f'{os.path.splitext(cl_file)[0]}.txt')
 
-    logger.success(tr('DEPLOY_SUCCESS', path=config.build_dir))
+    logger.success(tr('DEPLOY_SUCCESS', path=target))
     try:
         shutil.rmtree(config.build_dir)
     except Exception as e:
@@ -787,7 +806,8 @@ def deploy():
 
 def package():
     logger.debug('package')
-    target_file_name = f'{PROJECT_NAME}_{config.version}{qt_arch()}'
+    target_file_name = f'{PROJECT_NAME}_{config.version}-{platform.machine()}'
+
     #package magic
     if PLATFORM == LINUX:
         target_file_name = target_file_name + '.AppImage'
@@ -796,12 +816,13 @@ def package():
         except Exception as e:
             critical(str(e))
 
+    logger.success(tr('PKG_SUCCESS', path=config.deploy_dir / target_file_name))
     for item in config.deploy_dir.iterdir():
         # Пропускаем файл, который нужно оставить
         if item.name == target_file_name:
             continue
         try:
-            if item.is_dir():
+            if not item.is_dir():
                 item.unlink()  # Удаляет файл
             else:
                 shutil.rmtree(item)
