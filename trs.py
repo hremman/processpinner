@@ -16,12 +16,12 @@ LANG = {
 UNKNOWN_KEY = 'UNKNOWN_KEY'
 TRANSLATE_ERROR = 'TRANSLATE_ERROR'
 ERROR = 'ERROR'
-DOCKER = '"docker build . -t qt6-appimage-builder" "docker run --rm -u $(id -u):$(id -g) -v "$(pwd)":/workspace:z qt6-appimage-builder"'
+DOCKER = ':\n\n$ docker build . -t qt6-appimage-builder\n$ docker run --rm -u $(id -u):$(id -g) -v "$(pwd)":/workspace:z qt6-appimage-builder'
 
 TRS = {
     'ru': {
         #help
-        'HELP_DESCRIPTION': ("Скрипт сборки ProcessPinner." + f' Если AppImage не запускается с SEGFAULT, то используйте докер образ.{DOCKER}' if PLATFORM == LINUX else ''),
+        'HELP_DESCRIPTION': ("Скрипт сборки ProcessPinner." + f' Если AppImage не запускается с SEGFAULT, то используйте докер образ{DOCKER}' if PLATFORM == LINUX else ''),
         'HELP_VERSION':'Вывести версию скрипта и выйти',
         'HELP_HELP':'Вывести справку и выйти',
         'HELP_QMAKE': 'Указать расположение qmake. Если не указано, пробует искать',
@@ -74,13 +74,16 @@ TRS = {
         'QMAKE_ERROR': 'Конфигурирование проекта завершилось ошибкой',
         'MAKE_ERROR': 'Сборка завершилось ошибкой',
         'PROJ_VERSION': f'Версия {PROJECT_NAME}: {{ver}}',
+        'BUILD': 'Сборка',
+        'DEPLOYING': 'Извлечение',
+        'PKGING': 'Упаковка',
         #tr ошибки
         UNKNOWN_KEY: 'Неизвестный ключ вывода "{key}"',
         TRANSLATE_ERROR: 'Ошибка перевода:({t})  {error}'
     },
     'en': {
         #help
-        'HELP_DESCRIPTION': ("ProcessPinner build script." + f' If the AppImage fails to start with a SEGFAULT, use the Docker image.{DOCKER}' if PLATFORM == LINUX else ''),
+        'HELP_DESCRIPTION': ("ProcessPinner build script." + f' If the AppImage fails to start with a SEGFAULT, use the Docker image{DOCKER}' if PLATFORM == LINUX else ''),
         'HELP_VERSION': 'Print the script version and exit',
         'HELP_HELP': 'Print help and exit',
         'HELP_QMAKE': 'Specify qmake location. If not specified, it will try to find it',
@@ -133,6 +136,9 @@ TRS = {
         'QMAKE_ERROR': 'Project configuration failed',
         'MAKE_ERROR': 'Build failed',
         'PROJ_VERSION': f'Version of {PROJECT_NAME}: {{ver}}',
+        'BUILD': 'Building',
+        'DEPLOYING': 'Deploying',
+        'PKGING': 'Packaging',
         #tr ошибки
         UNKNOWN_KEY: 'Unknown output key "{key}"',
         TRANSLATE_ERROR: 'Translation error :({t})  {error}'

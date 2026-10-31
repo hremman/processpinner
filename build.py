@@ -21,7 +21,7 @@ from typing import Any, NoReturn
 from trs import *
 import urllib.request
 
-__version__ = "2.0"
+__version__ = "2.0.1"
 
 #===============================================
 #журналирование
@@ -151,6 +151,7 @@ def read_proj() -> str:
 def critical(msg: str) -> NoReturn:
     """Вывести критическую ошибку в журнал, вернуться в исходный каталог и завершиться."""
     logger.debug('critical')
+    logger.debug(f'go to {START_DIR}')
     os.chdir(START_DIR)
     logger.critical(msg)
     exit(-1)
@@ -340,6 +341,7 @@ class Configuration:
     download_tools = False
 
     def from_file(self, file: Path):
+        logger.debug('Configuration::from_file')
         bools = ['verbose', 'tag', 'msvc', 'download_tools']
         if not file.exists():
             critical(tr('CONF_NOT_EXISTS', path=file))
@@ -360,6 +362,7 @@ class Configuration:
 
 
     def from_dict(self, pairs: dict):
+        logger.debug('Configuration::from_dict')
         self.msvc = pairs.get('msvc') if pairs.get('msvc') else self.msvc
         self.msvc_tools = pairs.get('msvc_tools') if pairs.get('msvc_tools') else self.msvc_tools
         self.qmake = pairs.get('qmake') if pairs.get('qmake') else self.qmake
@@ -409,6 +412,7 @@ def choose_qt():
 
 
 def qt_arch():
+    logger.debug('qt_arch')
     arch = platform.machine().lower()
     if "amd64" in arch or "x86_64" in arch:
         return "_64"  # Стандартные 64-битные процессоры Intel/AMD
@@ -418,9 +422,11 @@ def qt_arch():
         return ""
 
 def add_in_path(path: Path):
+    logger.debug(f'add_in_path: {path}')
     os.environ['PATH'] = f"{os.environ['PATH']}{PATH_SEP}{path}"
 
 def detect_tool(tool: str | Path, tool_paths: list[Path]) -> bool:
+    logger.debug(f'detect_tool: {tool}')
     if type(tool) != str:
         if tool.exists():
             add_in_path(tool.parent)
@@ -506,6 +512,7 @@ def detect_unix_toolchain():
     if not result:
         no_make()
 def download_deploy_linux():
+    logger.debug('download_deploy_linux')
     tools = [
         ('https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage', 'linuxdeploy-x86_64.AppImage'),
         ('https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage', 'linuxdeploy-plugin-qt-x86_64.AppImage'),
@@ -520,6 +527,7 @@ def download_deploy_linux():
     add_in_path(config.deploy_dir)
 
 def detect_deploy():
+    logger.debug('detect_deploy')
     if PLATFORM == LINUX:
         if not (config.deployer and (config.deployer.name.startswith('linuxdeploy') and config.deployer.exists())):
             if not config.download_tools:
@@ -547,6 +555,7 @@ def detect_deploy():
         config.deployer = None
 
 def detect_packager():
+    logger.debug('detect_packager')
     if PLATFORM == LINUX:
         if not (config.packager and (config.deployer.name.startswith('appimagetool') and config.packager.exists())):
             if not config.download_tools:
@@ -631,17 +640,18 @@ def git_log() -> Changelog:
     commits = result.split('\n')
 
     for commit in commits:
+        commit = commit.strip().strip('"\'')
         maby_release = False
         # Префикс '!' — флаг релиза (инкремент мажорной версии)
         if commit.startswith('!'):
             commit = commit[1:]
             maby_release = True
-        if commit.strip().startswith('f:'): # Префикс 'f:' — исправление (fix)
-            fix.append(commit.partition('f:')[-1])
-        elif commit.strip().startswith('c:'): # Префикс 'c:' — изменение (change)
-            change.append(commit.partition('c:')[-1])
-        elif commit.strip().startswith('a:'): # Префикс 'a:' — новая фича (add)
-            add.append(commit.partition('a:')[-1])
+        if commit.startswith('f:'): # Префикс 'f:' — исправление (fix)
+            fix.append(commit.partition('f:')[-1].lstrip())
+        elif commit.startswith('c:'): # Префикс 'c:' — изменение (change)
+            change.append(commit.partition('c:')[-1].lstrip())
+        elif commit.startswith('a:'): # Префикс 'a:' — новая фича (add)
+            add.append(commit.partition('a:')[-1].lstrip())
         else:
             continue
         release += maby_release
@@ -730,8 +740,9 @@ def set_msvc_env(vcvarsall: Path, arch: str):
         os.environ[current_key] = "\n".join(current_value)
 
 def build():
-    logger.debug('build')
+    logger.info(tr('BUILD'))
     config.build_dir.mkdir(parents=True, exist_ok=True)
+    logger.debug(f'go to {config.build_dir}')
     os.chdir(config.build_dir)
     for item in config.build_dir.iterdir():
         try:
@@ -752,11 +763,12 @@ def build():
         run_sub(make_cmd, Path(), error_msg=tr('MAKE_ERROR'))
     except Exception as e:
         critical(str(e))
+    logger.debug(f'go to {START_DIR}')
     os.chdir(START_DIR)
     logger.success(tr('BUILD_SUCCESS', path= config.build_dir))
 
 def deploy():
-    logger.debug('deploy')
+    logger.info(tr('DEPLOYING'))
     config.deploy_dir.mkdir(exist_ok=True)
     if PLATFORM == LINUX:
         target = config.deploy_dir / PROJECT_NAME
@@ -798,6 +810,7 @@ def deploy():
         shutil.copy(cl_file, target / f'{os.path.splitext(cl_file)[0]}.txt')
 
     logger.success(tr('DEPLOY_SUCCESS', path=target))
+    logger.debug('clean up build dir after deploy')
     try:
         shutil.rmtree(config.build_dir)
     except Exception as e:
@@ -805,11 +818,12 @@ def deploy():
 
 
 def package():
-    logger.debug('package')
+    logger.info(tr('PKGING'))
     target_file_name = f'{PROJECT_NAME}_{config.version}-{platform.machine()}'
-
     #package magic
     if PLATFORM == LINUX:
+        logger.debug(f'go to {config.deploy_dir}')
+        os.chdir(config.deploy_dir)
         target_file_name = target_file_name + '.AppImage'
         try:
             run_sub([config.packager, PROJECT_NAME, config.deploy_dir / target_file_name], config.deploy_dir)
@@ -817,6 +831,7 @@ def package():
             critical(str(e))
 
     logger.success(tr('PKG_SUCCESS', path=config.deploy_dir / target_file_name))
+    logger.debug('clea up deploy dir after packaging')
     for item in config.deploy_dir.iterdir():
         # Пропускаем файл, который нужно оставить
         if item.name == target_file_name:
@@ -828,6 +843,8 @@ def package():
                 shutil.rmtree(item)
         except Exception as e:
             logger.error(tr('RM_FAULT', path=config.build_dir, msg=str(e)))
+    logger.debug(f'go to {START_DIR}')
+    os.chdir(START_DIR)
 
 #=====================================================
 if __name__ != '__main__':
@@ -836,6 +853,7 @@ else:
     parser = argparse.ArgumentParser(
         description=tr('HELP_DESCRIPTION'),
         add_help=False,
+        formatter_class= argparse.RawDescriptionHelpFormatter
     )
     arg_group = parser.add_argument_group(tr('HELP_ENV_GROUP'))
     arg_group.add_argument("--qmake", type=Path, help=tr('HELP_QMAKE'))
@@ -934,7 +952,3 @@ else:
         if cl:
             write(CH_LOG_PATH, root_cl)
             git_tag(str(config.version))
-    
-    
-
-os.chdir(START_DIR)
