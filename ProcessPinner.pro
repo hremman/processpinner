@@ -25,6 +25,7 @@ SOURCES += \
     src/tools/executors/binexecutor.cpp \
     src/tools/executors/pythonexecutor.cpp \
     src/tools/executors/javaexecutor.cpp \
+    src/tools/notifier.cpp \
     src/tools/parsers/gradle.cpp \
     src/tools.cpp
 
@@ -40,6 +41,7 @@ HEADERS += \
     src/tools/executors/binexecutor.h \
     src/tools/executors/pythonexecutor.h \
     src/tools/executors/javaexecutor.h \
+    src/tools/notifier.h \
     src/tools/parsers/parsers.hpp \
     src/processtab.h \
     src/projectparser.hpp \

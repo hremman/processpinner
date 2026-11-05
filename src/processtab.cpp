@@ -20,6 +20,7 @@
 #include "globals.hpp"
 #include "ui_processtab.h"
 #include "tools.h"
+#include "tools/notifier.h"
 
 #include <QString>
 #include <QTimer>
@@ -506,6 +507,10 @@ void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus){
     LogLevel level = LogLevel::PP_INFO;
     ExecutableStatus status = ExecutableStatus::STOPPED;
     bool isFault = notNormalFinished(exitStatus, exitCode);
+    QString msg;
+    if (isFault) msg = tr("Task failed with exit code %1");
+    else msg = tr("Task comleted with exit code %1");
+    Notifier::instance().notify(m_dto->name, msg.arg(exitCode), isFault);
     if (isFault){
         emit statusAlert();
         level = LogLevel::PP_ERROR;

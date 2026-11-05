@@ -24,9 +24,11 @@
 #include <QDir>
 #include <QLibraryInfo>
 #include <QFontDatabase>
+#include <QLoggingCategory>
 
 #include "globals.hpp"
 #include "loghandler.h"
+#include "tools/notifier.h"
 
 void loadProjectFonts();
 
@@ -34,8 +36,9 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     a.setApplicationVersion(APP_VERSION);
+    a.setApplicationName("Process Pinner");
+    a.setApplicationDisplayName("Process Pinner");
     QFile rcFile(Global::Consts::RC_FILE_PATH);
-
     QMap<QString, QString> rc_readed;
     qDebug() << "    Read rc file: " << Global::Consts::RC_FILE_PATH;
     if (rcFile.exists()){
@@ -95,6 +98,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.show();
+    Notifier::instance(&w);
     return a.exec();
 }
 

@@ -47,6 +47,7 @@
 #include "aboutdialog.h"
 #include "tools.h"
 #include "helpwindow.h"
+#include "tools/notifier.h"
 
 QString MainWindow::__M_title = "Process Pinner[*]";
 std::vector<std::pair<QKeySequence, QString>> MainWindow::__M_shortcuts;
@@ -586,47 +587,21 @@ QByteArray MainWindow::configurationToBytes(bool compact){
 
 void MainWindow::closeEvent(QCloseEvent *event){
     qDebug() << "void MainWindow::closeEvent(QCloseEvent *event)";
-    for (auto pair_c_t = m_config2executable.constBegin(); pair_c_t != m_config2executable.constEnd(); ++pair_c_t)
-        if(!(pair_c_t.value()->isStoped())){
-            auto pressed = QMessageBox::question(
-                this,
-                tr("Stop on exit?"),
-                tr("There is run process(es).\nStop it?"),
-                QMessageBox::StandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel),
-                QMessageBox::StandardButton::Cancel
-            );
-            if (pressed == QMessageBox::StandardButton::Cancel){
-                event->ignore();
-                return;
-            } else {
-                awaitedStopAll();
-            }
+    qInfo() << event->spontaneous();
+    if (Notifier::isAvalibale()){
+        if(event->spontaneous()){
+            Notifier::instance().hideNotify();
+            hide();
+            event->ignore();
+        } else {
+            if(terminate()) event->accept();
+            else event->ignore();
         }
 
-    Global::Vars::RC[Global::Consts::KEY_THEME] = m_darkTheme ? "on" : "off";
-    if(!m_config2executable.isEmpty() && !m_saved){
-        qDebug() << "    Store config in RC";
-        QByteArray byteArray = configurationToBytes(true);
-        Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET] = QString::fromUtf8(byteArray);
     } else {
-        Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET] = "";
+        if(terminate()) event->accept();
+        else event->ignore();
     }
-    Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_FILE] = m_current_file;
-    Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_SAVED] = m_saved ? "yes" : "no";
-    QFile rcFile(Global::Consts::RC_FILE_PATH);
-    if(rcFile.open(QFile::WriteOnly | QFile::Text)){
-        qDebug() << "Dump rc to file";
-        QTextStream out(&rcFile);
-        out.setEncoding(QStringConverter::Encoding::Utf8);
-        out << "#Be careful on edit this file mannual" << Qt::endl;
-        out << "#Осторожно редактируйте файл руками" << Qt::endl;
-        for (auto property = Global::Vars::RC.constBegin(); property != Global::Vars::RC.constEnd(); property++)
-            out << property.key() << '=' << property.value() << Qt::endl;
-    } else {
-        qWarning() << "    Could not open rc file for dump: " << rcFile.errorString();
-    }
-    if(m_help) m_help->close();
-    event->accept();
 }
 
 QByteArray MainWindow::readJson(const QString & jsonFilePath, bool showDia){
@@ -1038,4 +1013,48 @@ void MainWindow::showElementMenu(const QPoint& pos){
     // Выполняем
     m_element_menu->exec(ui->config_list->mapToGlobal(pos));
 
+}
+
+bool MainWindow::terminate(){
+    qDebug() << "terminate";
+    for (auto pair_c_t = m_config2executable.constBegin(); pair_c_t != m_config2executable.constEnd(); ++pair_c_t)
+        if(!(pair_c_t.value()->isStoped())){
+            auto pressed = QMessageBox::question(
+                this,
+                tr("Stop on exit?"),
+                tr("There is run process(es).\nStop it?"),
+                QMessageBox::StandardButtons(QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::Cancel),
+                QMessageBox::StandardButton::Cancel
+                );
+            if (pressed == QMessageBox::StandardButton::Cancel){
+                return false;
+            } else {
+                awaitedStopAll();
+            }
+        }
+
+    Global::Vars::RC[Global::Consts::KEY_THEME] = m_darkTheme ? "on" : "off";
+    if(!m_config2executable.isEmpty() && !m_saved){
+        qDebug() << "    Store config in RC";
+        QByteArray byteArray = configurationToBytes(true);
+        Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET] = QString::fromUtf8(byteArray);
+    } else {
+        Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET] = "";
+    }
+    Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_FILE] = m_current_file;
+    Global::Vars::RC[Global::Consts::KEY_LAST_PROGRAM_SET_SAVED] = m_saved ? "yes" : "no";
+    QFile rcFile(Global::Consts::RC_FILE_PATH);
+    if(rcFile.open(QFile::WriteOnly | QFile::Text)){
+        qDebug() << "Dump rc to file";
+        QTextStream out(&rcFile);
+        out.setEncoding(QStringConverter::Encoding::Utf8);
+        out << "#Be careful on edit this file mannual" << Qt::endl;
+        out << "#Осторожно редактируйте файл руками" << Qt::endl;
+        for (auto property = Global::Vars::RC.constBegin(); property != Global::Vars::RC.constEnd(); property++)
+            out << property.key() << '=' << property.value() << Qt::endl;
+    } else {
+        qWarning() << "    Could not open rc file for dump: " << rcFile.errorString();
+    }
+    if(m_help) m_help->close();
+    return true;
 }
