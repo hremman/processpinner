@@ -1,4 +1,4 @@
-QT       += core gui concurrent
+QT       += core gui concurrent multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,7 +9,8 @@ CONFIG += resources_big
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
-
+INCLUDEPATH += . \
+               src
 SOURCES += \
     src/aboutdialog.cpp \
     src/loghandler.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
     src/mainwindow.cpp \
     src/processtab.cpp \
     src/projectparser.cpp \
+    src/qlistwidgetscrollone.cpp \
     src/tools/executors/binexecutor.cpp \
     src/tools/executors/pythonexecutor.cpp \
     src/tools/executors/javaexecutor.cpp \
@@ -38,6 +40,7 @@ HEADERS += \
     src/globals.hpp \
     src/helpwindow.h \
     src/mainwindow.h \
+    src/qlistwidgetscrollone.h \
     src/tools/executors/binexecutor.h \
     src/tools/executors/pythonexecutor.h \
     src/tools/executors/javaexecutor.h \

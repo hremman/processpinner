@@ -377,7 +377,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QListWidget" name="config_list">
+         <widget class="QListWidgetScrollOne" name="config_list">
           <property name="contextMenuPolicy">
            <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
           </property>
@@ -516,6 +516,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QListWidgetScrollOne</class>
+   <extends>QListWidget</extends>
+   <header>qlistwidgetscrollone.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../../resources/resources.qrc"/>
  </resources>

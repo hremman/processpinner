@@ -21,6 +21,7 @@
 #include "ui_processtab.h"
 #include "tools.h"
 #include "tools/notifier.h"
+//#include <QSoundEffect>
 
 #include <QString>
 #include <QTimer>
@@ -503,6 +504,11 @@ void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus){
     qDebug() << "void ProcessTab::onFinished(int exitCode, QProcess::ExitStatus exitStatus)" << "<" << m_dto->name << ">";
     disconnect(m_terminate_connection);
     m_terminate_timer.stop();
+
+    //QSoundEffect *effect = new QSoundEffect(this);
+    //effect->setSource(QUrl::fromLocalFile("/home/ddenisov/shit/pig.wav")); // или QUrl("qrc:/sounds/effect.wav")
+    //effect->setVolume(0.5f); // громкость от 0.0 до 1.0
+    //effect->play();
 
     LogLevel level = LogLevel::PP_INFO;
     ExecutableStatus status = ExecutableStatus::STOPPED;
