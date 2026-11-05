@@ -82,7 +82,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../../resouces/resources.qrc">:/logo-512.png</pixmap>
+          <pixmap resource="../../resources/resources.qrc">:/logo-512.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -107,7 +107,7 @@
           <string notr="true"/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../../resouces/resources.qrc">:/images/gplv3-or-later.png</pixmap>
+          <pixmap resource="../../resources/resources.qrc">:/images/gplv3-or-later.png</pixmap>
          </property>
         </widget>
        </item>
@@ -167,7 +167,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../resouces/resources.qrc"/>
+  <include location="../../resources/resources.qrc"/>
  </resources>
  <connections>
   <connection>
